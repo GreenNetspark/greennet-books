@@ -22,8 +22,6 @@ import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
   ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
@@ -44,7 +42,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading = false,
-  pageSize = 10,
+  pageSize = 20,
   emptyState,
   onRowClick,
 }: DataTableProps<TData, TValue>) {
@@ -68,13 +66,26 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  const totalRows = table.getFilteredRowModel().rows.length;
+  const startRow =
+    totalRows === 0
+      ? 0
+      : table.getState().pagination.pageIndex *
+          table.getState().pagination.pageSize +
+        1;
+  const endRow = Math.min(
+    (table.getState().pagination.pageIndex + 1) *
+      table.getState().pagination.pageSize,
+    totalRows
+  );
+
   return (
-    <div className="space-y-3">
-      {/* Table Container with refined border & clean card elevation */}
-      <div className="rounded-lg border border-border bg-card overflow-hidden shadow-xs">
+    <div className="space-y-2">
+      {/* Compact Zoho-style Table Container */}
+      <div className="rounded border border-border bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-muted/50 border-b border-border">
+            <TableHeader className="bg-[#f8f9fa] dark:bg-muted/40 border-b border-border">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="hover:bg-transparent border-none">
                   {headerGroup.headers.map((header) => {
@@ -84,13 +95,13 @@ export function DataTable<TData, TValue>({
                     return (
                       <TableHead
                         key={header.id}
-                        className="text-xs font-semibold text-muted-foreground whitespace-nowrap h-10 px-4 py-2"
+                        className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap h-9 px-3 py-1.5"
                       >
                         {header.isPlaceholder ? null : canSort ? (
                           <button
                             type="button"
                             onClick={header.column.getToggleSortingHandler()}
-                            className="flex items-center gap-1.5 hover:text-foreground transition-colors group cursor-pointer select-none"
+                            className="flex items-center gap-1 hover:text-foreground transition-colors group cursor-pointer select-none uppercase"
                           >
                             <span>
                               {flexRender(
@@ -104,7 +115,7 @@ export function DataTable<TData, TValue>({
                               ) : isSorted === "desc" ? (
                                 <ArrowDown className="size-3 text-primary stroke-[2.5]" />
                               ) : (
-                                <ArrowUpDown className="size-3 opacity-40 group-hover:opacity-100 transition-opacity" />
+                                <ArrowUpDown className="size-3 opacity-35 group-hover:opacity-100 transition-opacity" />
                               )}
                             </span>
                           </button>
@@ -123,31 +134,29 @@ export function DataTable<TData, TValue>({
 
             <TableBody>
               {isLoading ? (
-                // Loading Skeleton Rows
-                Array.from({ length: pageSize }).map((_, index) => (
-                  <TableRow key={index} className="hover:bg-transparent border-b border-border/50">
+                Array.from({ length: 8 }).map((_, index) => (
+                  <TableRow key={index} className="hover:bg-transparent border-b border-border/60 h-9">
                     {columns.map((_, colIdx) => (
-                      <TableCell key={colIdx} className="px-4 py-3">
-                        <Skeleton className="h-4 w-full" />
+                      <TableCell key={colIdx} className="px-3 py-1.5">
+                        <Skeleton className="h-3.5 w-full" />
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : table.getRowModel().rows?.length ? (
-                // Rendered Rows with subtle, polished row hover
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                     onClick={() => onRowClick?.(row.original)}
-                    className={`transition-colors border-b border-border/50 hover:bg-muted/30 ${
+                    className={`h-9 transition-colors border-b border-border/60 last:border-b-0 even:bg-[#fbfbfb] dark:even:bg-muted/15 hover:bg-blue-50/50 dark:hover:bg-accent/40 ${
                       onRowClick ? "cursor-pointer" : ""
                     }`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className="px-4 py-3 text-xs sm:text-sm text-foreground align-middle"
+                        className="px-3 py-1.5 text-[13px] text-foreground align-middle"
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -158,19 +167,16 @@ export function DataTable<TData, TValue>({
                   </TableRow>
                 ))
               ) : (
-                // Empty Table
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-64 text-center p-0"
+                    className="h-48 text-left p-4"
                   >
                     {emptyState || (
-                      <div className="py-12">
-                        <EmptyState
-                          title="No records found"
-                          description="Try adjusting your search or filters to find what you are looking for."
-                        />
-                      </div>
+                      <EmptyState
+                        title="No records found"
+                        description="Try adjusting your search or filters to find what you are looking for."
+                      />
                     )}
                   </TableCell>
                 </TableRow>
@@ -180,76 +186,42 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      {/* Pagination Controls */}
-      {!isLoading && table.getFilteredRowModel().rows.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-1 py-1 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <span>
-              Showing{" "}
-              <strong className="font-semibold text-foreground">
-                {table.getState().pagination.pageIndex *
-                  table.getState().pagination.pageSize +
-                  1}
-              </strong>{" "}
-              to{" "}
-              <strong className="font-semibold text-foreground">
-                {Math.min(
-                  (table.getState().pagination.pageIndex + 1) *
-                    table.getState().pagination.pageSize,
-                  table.getFilteredRowModel().rows.length
-                )}
-              </strong>{" "}
-              of{" "}
-              <strong className="font-semibold text-foreground">
-                {table.getFilteredRowModel().rows.length}
-              </strong>{" "}
-              customers
-            </span>
+      {/* Inline Zoho-style Pagination Footer */}
+      {!isLoading && totalRows > 0 && (
+        <div className="flex items-center justify-between px-1 py-1 text-[12px] text-muted-foreground">
+          <div className="tabular-nums">
+            <span className="font-medium text-foreground">
+              {startRow}–{endRow}
+            </span>{" "}
+            of <span className="font-medium text-foreground">{totalRows}</span>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="icon-xs"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-              title="First page"
-            >
-              <ChevronsLeft className="size-3.5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon-xs"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              title="Previous page"
-            >
-              <ChevronLeft className="size-3.5" />
-            </Button>
-
-            <span className="px-2 font-medium text-foreground">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon-xs"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+                title="Previous page"
+                className="h-7 w-7 rounded"
+              >
+                <ChevronLeft className="size-3.5" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon-xs"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+                title="Next page"
+                className="h-7 w-7 rounded"
+              >
+                <ChevronRight className="size-3.5" />
+              </Button>
+            </div>
+            <span className="text-[12px] text-muted-foreground hidden sm:inline">
+              {table.getState().pagination.pageSize} per page
             </span>
-
-            <Button
-              variant="outline"
-              size="icon-xs"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              title="Next page"
-            >
-              <ChevronRight className="size-3.5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon-xs"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-              title="Last page"
-            >
-              <ChevronsRight className="size-3.5" />
-            </Button>
           </div>
         </div>
       )}

@@ -20,8 +20,6 @@ import {
   Edit,
   Power,
   FileText,
-  Building,
-  User,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -38,46 +36,35 @@ export function getCustomerColumns({
       header: "Customer Name",
       cell: ({ row }) => {
         const customer = row.original;
-        const isBusiness = customer.type === "business";
 
         return (
-          <div className="flex items-center gap-2.5 min-w-[210px]">
-            <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
-              {isBusiness ? (
-                <Building className="size-4" />
-              ) : (
-                <User className="size-4" />
-              )}
-            </div>
-            <div className="flex flex-col min-w-0">
-              <button
-                type="button"
-                onClick={() =>
-                  toast.info(
-                    `Customer Details (UI-CUST-003) for ${customer.name} will be released in Phase 2.`
-                  )
-                }
-                className="font-semibold text-xs sm:text-sm text-foreground hover:text-primary transition-colors text-left truncate max-w-[220px] cursor-pointer"
-              >
-                {customer.name}
-              </button>
-              <span className="text-[11px] text-muted-foreground truncate max-w-[220px]">
-                {customer.contactPerson}
-              </span>
-            </div>
+          <div className="flex flex-col min-w-[190px] py-0.5">
+            <button
+              type="button"
+              onClick={() =>
+                toast.info(
+                  `Customer Details (UI-CUST-003) for ${customer.name} will be released in Phase 2.`
+                )
+              }
+              className="font-medium text-[13px] text-primary hover:underline text-left truncate max-w-[230px] cursor-pointer leading-tight"
+            >
+              {customer.name}
+            </button>
+            <span className="text-[11px] text-muted-foreground truncate max-w-[230px] leading-tight mt-0.5">
+              {customer.contactPerson}
+            </span>
           </div>
         );
       },
     },
     {
       accessorKey: "type",
-      header: "Customer Type",
+      header: "Type",
       cell: ({ row }) => {
         const type = row.getValue("type") as string;
-        const isBusiness = type === "business";
         return (
-          <span className="inline-flex items-center text-xs font-medium text-muted-foreground capitalize">
-            {isBusiness ? "Business" : "Individual"}
+          <span className="text-[12px] text-muted-foreground capitalize">
+            {type === "business" ? "Business" : "Individual"}
           </span>
         );
       },
@@ -90,15 +77,15 @@ export function getCustomerColumns({
         const placeOfSupply = row.original.placeOfSupply;
 
         if (!gstin) {
-          return <span className="text-muted-foreground text-xs font-mono">—</span>;
+          return <span className="text-muted-foreground text-[12px] font-mono">—</span>;
         }
 
         return (
-          <div className="flex flex-col">
-            <span className="font-mono text-xs font-medium text-foreground tracking-tight">
+          <div className="flex flex-col leading-tight">
+            <span className="font-mono text-[12px] text-foreground">
               {gstin}
             </span>
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-[11px] text-muted-foreground">
               {placeOfSupply}
             </span>
           </div>
@@ -107,16 +94,16 @@ export function getCustomerColumns({
     },
     {
       accessorKey: "mobile",
-      header: "Mobile",
+      header: "Phone / Email",
       cell: ({ row }) => {
         const mobile = row.getValue("mobile") as string;
         const email = row.original.email;
         return (
-          <div className="flex flex-col">
-            <span className="font-mono text-xs text-foreground">
+          <div className="flex flex-col leading-tight">
+            <span className="font-mono text-[12px] text-foreground">
               {formatPhoneNumber(mobile)}
             </span>
-            <span className="text-[10px] text-muted-foreground truncate max-w-[150px]">
+            <span className="text-[11px] text-muted-foreground truncate max-w-[160px]">
               {email}
             </span>
           </div>
@@ -129,7 +116,11 @@ export function getCustomerColumns({
       cell: ({ row }) => {
         const amount = row.getValue("receivables") as number;
         return (
-          <div className="text-right font-medium tabular-nums text-xs sm:text-sm text-foreground">
+          <div
+            className={`text-right tabular-nums text-[13px] ${
+              amount > 0 ? "money" : "text-muted-foreground"
+            }`}
+          >
             {formatCurrency(amount)}
           </div>
         );
@@ -137,20 +128,18 @@ export function getCustomerColumns({
     },
     {
       accessorKey: "advanceBalance",
-      header: () => <div className="text-right">Advance Balance</div>,
+      header: () => <div className="text-right">Unused Credits</div>,
       cell: ({ row }) => {
         const amount = row.getValue("advanceBalance") as number;
         if (amount > 0) {
           return (
-            <div className="text-right font-medium tabular-nums text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 font-semibold">
-              <span className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 px-2 py-0.5 rounded-md">
-                {formatCurrency(amount)}
-              </span>
+            <div className="text-right tabular-nums text-[13px] money">
+              {formatCurrency(amount)}
             </div>
           );
         }
         return (
-          <div className="text-right font-medium tabular-nums text-xs sm:text-sm text-muted-foreground">
+          <div className="text-right tabular-nums text-[13px] text-muted-foreground">
             {formatCurrency(amount)}
           </div>
         );
@@ -177,17 +166,15 @@ export function getCustomerColumns({
               <DropdownMenuTrigger render={
                 <Button
                   variant="ghost"
-                  size="icon-sm"
+                  size="icon-xs"
                   aria-label={`Actions for ${customer.name}`}
-                  className="size-8 text-muted-foreground hover:text-foreground cursor-pointer"
+                  className="size-7 text-muted-foreground hover:text-foreground cursor-pointer rounded"
                 />
               }>
                 <MoreHorizontal className="size-4" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 p-1 text-xs">
-                <DropdownMenuLabel>
-                  Actions
-                </DropdownMenuLabel>
+              <DropdownMenuContent align="end" className="w-44 p-1 text-[12px]">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() =>
@@ -221,12 +208,12 @@ export function getCustomerColumns({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => onToggleStatus(customer)}
-                  className={`cursor-pointer ${
-                    isInactive ? "text-emerald-700 font-medium" : "text-amber-700 font-medium"
+                  className={`cursor-pointer font-medium ${
+                    isInactive ? "text-success" : "text-warning"
                   }`}
                 >
                   <Power className="size-3.5 mr-2" />
-                  <span>{isInactive ? "Activate Customer" : "Deactivate Customer"}</span>
+                  <span>{isInactive ? "Mark as Active" : "Mark as Inactive"}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

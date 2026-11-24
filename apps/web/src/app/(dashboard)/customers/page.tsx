@@ -4,18 +4,14 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
-  UserPlus,
+  Plus,
   Upload,
   Download,
   Users,
-  IndianRupee,
   ShieldAlert,
-  Wallet,
-  CheckCircle2,
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
-import { SummaryCard } from "@/components/shared/SummaryCard";
 import { DataTable } from "@/components/shared/DataTable";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorState } from "@/components/shared/ErrorState";
@@ -24,19 +20,11 @@ import { getCustomerColumns } from "@/features/customers/components/CustomerColu
 import {
   getCustomers,
   toggleCustomerStatus,
-  CustomersResponse,
 } from "@/features/customers/api";
 import { Customer } from "@/types/customer";
-import { formatCurrency } from "@/lib/formatters";
 
 export default function CustomersPage() {
   const [data, setData] = useState<Customer[]>([]);
-  const [summary, setSummary] = useState<CustomersResponse["summary"]>({
-    totalReceivables: 0,
-    totalAdvances: 0,
-    activeCount: 0,
-    totalCount: 0,
-  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isPermissionDenied, setIsPermissionDenied] = useState<boolean>(false);
@@ -66,7 +54,6 @@ export default function CustomersPage() {
       });
 
       setData(res.data);
-      setSummary(res.summary);
     } catch (err: any) {
       if (err.message && err.message.includes("PERMISSION_DENIED")) {
         setIsPermissionDenied(true);
@@ -94,7 +81,7 @@ export default function CustomersPage() {
           updated.status === "active" ? "Active" : "Inactive"
         }.`
       );
-    } catch (err) {
+    } catch {
       toast.error("Failed to update customer status.");
     }
   };
@@ -116,22 +103,17 @@ export default function CustomersPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
+    <div className="space-y-3">
+      {/* Zoho-style Single-Row Page Header */}
       <PageHeader
         title="Customers"
-        description="Manage customers, GST details, outstanding receivables, and advance balances."
-        breadcrumbs={[
-          { label: "Sales", href: "/customers" },
-          { label: "Customers", href: "/customers" },
-        ]}
         actions={
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => toast.info("Customer bulk import will be available in Phase 2.")}
-              className="gap-1.5 text-xs"
+              className="h-8 gap-1.5 text-[12px] rounded"
             >
               <Upload className="size-3.5 text-muted-foreground" />
               <span>Import</span>
@@ -140,7 +122,7 @@ export default function CustomersPage() {
               variant="outline"
               size="sm"
               onClick={() => toast.info("Exporting customer master list to Excel/CSV...")}
-              className="gap-1.5 text-xs"
+              className="h-8 gap-1.5 text-[12px] rounded"
             >
               <Download className="size-3.5 text-muted-foreground" />
               <span>Export</span>
@@ -148,48 +130,16 @@ export default function CustomersPage() {
             <Button
               render={<Link href="/customers/new" />}
               size="sm"
-              className="gap-1.5 text-xs bg-primary text-primary-foreground font-medium shadow-xs hover:bg-primary/90"
+              className="h-8 gap-1 text-[12px] bg-primary text-primary-foreground font-medium hover:bg-primary/90 rounded px-3"
             >
-              <UserPlus className="size-3.5" />
-              <span>Create Customer</span>
+              <Plus className="size-3.5" />
+              <span>New</span>
             </Button>
           </div>
         }
       />
 
-      {/* Summary KPI Cards */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <SummaryCard
-          title="Total Customers"
-          value={isLoading ? "..." : summary.totalCount}
-          subtitle={`${summary.activeCount} active in system`}
-          icon={Users}
-          iconClassName="text-primary"
-        />
-        <SummaryCard
-          title="Active Customers"
-          value={isLoading ? "..." : summary.activeCount}
-          subtitle="Ready for invoicing"
-          icon={CheckCircle2}
-          iconClassName="text-emerald-600"
-        />
-        <SummaryCard
-          title="Total Receivables"
-          value={isLoading ? "..." : formatCurrency(summary.totalReceivables)}
-          subtitle="Outstanding customer balances"
-          icon={IndianRupee}
-          iconClassName="text-emerald-600"
-        />
-        <SummaryCard
-          title="Customer Advances"
-          value={isLoading ? "..." : formatCurrency(summary.totalAdvances)}
-          subtitle="Unallocated advance liabilities"
-          icon={Wallet}
-          iconClassName="text-blue-600"
-        />
-      </div>
-
-      {/* Filter Bar */}
+      {/* Compact Filter Bar */}
       <CustomerFilters
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -206,21 +156,21 @@ export default function CustomersPage() {
 
       {/* Main Content: Table or Special State */}
       {isPermissionDenied ? (
-        <div className="flex min-h-[340px] flex-col items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-destructive/15 text-destructive mb-3">
-            <ShieldAlert className="size-6" />
+        <div className="flex flex-col items-start rounded border border-destructive/30 bg-destructive/5 p-6">
+          <div className="flex items-center gap-2 text-destructive mb-1.5">
+            <ShieldAlert className="size-5" />
+            <h3 className="text-[14px] font-semibold">
+              Permission Restricted
+            </h3>
           </div>
-          <h3 className="text-base font-semibold text-foreground">
-            Permission Restricted
-          </h3>
-          <p className="mt-1.5 max-w-md text-xs sm:text-sm text-muted-foreground">
+          <p className="max-w-lg text-[13px] text-muted-foreground">
             You do not have authorized permissions to view or manage customer accounts for this organization. Contact your administrator to request access.
           </p>
           <Button
             variant="outline"
             size="sm"
             onClick={handleResetFilters}
-            className="mt-4 text-xs"
+            className="mt-3 h-8 text-[12px] rounded"
           >
             Reset Simulator State
           </Button>
@@ -236,7 +186,7 @@ export default function CustomersPage() {
           columns={columns}
           data={data}
           isLoading={isLoading}
-          pageSize={10}
+          pageSize={20}
           emptyState={
             <EmptyState
               icon={Users}
@@ -250,10 +200,10 @@ export default function CustomersPage() {
                 <Button
                   render={<Link href="/customers/new" />}
                   size="sm"
-                  className="gap-1.5 text-xs"
+                  className="h-8 gap-1 text-[12px] rounded"
                 >
-                  <UserPlus className="size-3.5" />
-                  Create Customer
+                  <Plus className="size-3.5" />
+                  New Customer
                 </Button>
               }
             />

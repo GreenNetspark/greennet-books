@@ -2,24 +2,19 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  Building,
-  User,
-  MapPin,
-  FileText,
-  CreditCard,
-  Banknote,
+  ArrowLeft,
   AlertTriangle,
   Info,
   Save,
   FileEdit,
 } from "lucide-react";
 
-import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,13 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { collapseExpandVariants } from "@/lib/motion";
 import { customerSchema, CustomerFormValues } from "@/features/customers/schema";
@@ -116,12 +104,11 @@ export default function CreateCustomerPage() {
     }
   }, [watchedName, watchedGstin]);
 
-  // Handle Form Submission
   const onSubmit = async (values: CustomerFormValues) => {
     setIsSubmitting(true);
     try {
       const created = await createCustomer(values, false);
-      toast.success(`Customer "${created.name}" created successfully!`);
+      toast.success(`Customer "${created.name}" created successfully.`);
       router.push("/customers");
     } catch (err: any) {
       toast.error(err.message || "Failed to create customer.");
@@ -129,7 +116,6 @@ export default function CreateCustomerPage() {
     }
   };
 
-  // Handle Save as Draft
   const onSaveDraft = async () => {
     const values = watch();
     if (!values.name || values.name.trim().length === 0) {
@@ -142,13 +128,12 @@ export default function CreateCustomerPage() {
       const created = await createCustomer(values as CustomerFormValues, true);
       toast.success(`Customer "${created.name}" saved as Draft.`);
       router.push("/customers");
-    } catch (err: any) {
+    } catch {
       toast.error("Failed to save draft.");
       setIsSubmitting(false);
     }
   };
 
-  // Handle Cancel
   const handleCancelClick = () => {
     if (isDirty) {
       setShowCancelDialog(true);
@@ -158,385 +143,277 @@ export default function CreateCustomerPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-16">
-      {/* Page Header */}
-      <PageHeader
-        title="Create Customer"
-        description="Add a new customer account to your organization ledger with statutory GST information."
-        breadcrumbs={[
-          { label: "Sales", href: "/customers" },
-          { label: "Customers", href: "/customers" },
-          { label: "Create Customer" },
-        ]}
-        actions={
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCancelClick}
-              className="text-xs"
-              type="button"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onSaveDraft}
-              disabled={isSubmitting}
-              className="text-xs gap-1.5"
-              type="button"
-            >
-              <FileEdit className="size-3.5 text-muted-foreground" />
-              <span>Save as Draft</span>
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleSubmit(onSubmit)}
-              loading={isSubmitting}
-              className="text-xs gap-1.5 bg-primary text-primary-foreground font-medium shadow-xs hover:bg-primary/90"
-              type="button"
-            >
-              <Save className="size-3.5" />
-              <span>Save Customer</span>
-            </Button>
-          </div>
-        }
-      />
+    <div className="max-w-5xl space-y-4 pb-12">
+      {/* Zoho-style Single-Row Header */}
+      <div className="flex items-center justify-between border-b border-border pb-3">
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/customers"
+            onClick={(e) => {
+              if (isDirty) {
+                e.preventDefault();
+                setShowCancelDialog(true);
+              }
+            }}
+            className="flex items-center justify-center size-7 rounded border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            aria-label="Back to customers"
+          >
+            <ArrowLeft className="size-3.5" />
+          </Link>
+          <h1 className="text-[18px] font-semibold text-foreground leading-tight">
+            New Customer
+          </h1>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCancelClick}
+            className="h-8 text-[12px] rounded"
+            type="button"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSaveDraft}
+            disabled={isSubmitting}
+            className="h-8 text-[12px] gap-1.5 rounded"
+            type="button"
+          >
+            <FileEdit className="size-3.5 text-muted-foreground" />
+            <span>Save as Draft</span>
+          </Button>
+          <Button
+            size="sm"
+            onClick={handleSubmit(onSubmit)}
+            loading={isSubmitting}
+            className="h-8 text-[12px] gap-1.5 bg-primary text-primary-foreground font-medium hover:bg-primary/90 rounded px-3"
+            type="button"
+          >
+            <Save className="size-3.5" />
+            <span>Save</span>
+          </Button>
+        </div>
+      </div>
 
       {/* Duplicate Warning Alert */}
       {duplicateWarning && (
-        <div className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300 shadow-xs">
-          <AlertTriangle className="size-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-semibold text-sm">Potential Duplicate Customer</p>
-            <p>{duplicateWarning}</p>
+        <div className="flex items-start gap-2.5 rounded border border-amber-300 bg-amber-50 px-3.5 py-2.5 text-[12px] text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300">
+          <AlertTriangle className="size-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+          <div>
+            <span className="font-semibold">Potential Duplicate: </span>
+            <span>{duplicateWarning}</span>
           </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Section 1: Basic Information */}
-        <Card className="shadow-xs">
-          <CardHeader className="pb-4 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-                  <Building className="size-4" />
-                </div>
-                <span>1. Basic Information</span>
-              </CardTitle>
-              <span className="text-[11px] font-medium text-muted-foreground">Step 1 of 7</span>
-            </div>
-            <CardDescription className="text-xs mt-1">
-              Primary business identity and legal entity categorization.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Customer Name */}
-              <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-xs font-semibold">
-                  Customer Name <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  placeholder="e.g. Sri Lakshmi Traders"
-                  {...register("name")}
-                  className={errors.name ? "border-destructive" : ""}
-                />
-                {errors.name && (
-                  <p className="text-[11px] text-destructive font-medium">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
+      {/* Flat Form Pad Surface */}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="rounded border border-border bg-card p-5 md:p-6 space-y-6"
+      >
+        {/* 1. BASIC DETAILS */}
+        <section className="space-y-4">
+          <h2 className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
+            Basic Details
+          </h2>
 
-              {/* Customer Type */}
-              <div className="space-y-1.5">
-                <Label htmlFor="type" className="text-xs font-semibold">
-                  Customer Type <span className="text-destructive">*</span>
-                </Label>
-                <Controller
-                  name="type"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={(val) => field.onChange(val || "business")}>
-                      <SelectTrigger id="type" className="h-9 text-xs">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CUSTOMER_TYPES.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.type && (
-                  <p className="text-[11px] text-destructive font-medium">
-                    {errors.type.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Section 2: Contact Information */}
-        <Card className="shadow-xs">
-          <CardHeader className="pb-4 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-                  <User className="size-4" />
-                </div>
-                <span>2. Contact Information</span>
-              </CardTitle>
-              <span className="text-[11px] font-medium text-muted-foreground">Step 2 of 7</span>
-            </div>
-            <CardDescription className="text-xs mt-1">
-              Key personnel for billing communications, invoice notifications, and statements.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Contact Person */}
-              <div className="space-y-1.5">
-                <Label htmlFor="contactPerson" className="text-xs font-semibold">
-                  Contact Person <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="contactPerson"
-                  placeholder="e.g. Ramesh Kumar"
-                  {...register("contactPerson")}
-                  className={errors.contactPerson ? "border-destructive" : ""}
-                />
-                {errors.contactPerson && (
-                  <p className="text-[11px] text-destructive font-medium">
-                    {errors.contactPerson.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Email */}
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-xs font-semibold">
-                  Email Address <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="accounts@example.in"
-                  {...register("email")}
-                  className={errors.email ? "border-destructive" : ""}
-                />
-                {errors.email && (
-                  <p className="text-[11px] text-destructive font-medium">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Mobile Number */}
-              <div className="space-y-1.5">
-                <Label htmlFor="mobile" className="text-xs font-semibold">
-                  Mobile Number <span className="text-destructive">*</span>
-                </Label>
-                <div className="relative">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-mono text-muted-foreground">
-                    +91
-                  </span>
-                  <Input
-                    id="mobile"
-                    placeholder="9876543210"
-                    {...register("mobile")}
-                    className={`pl-10 font-mono ${errors.mobile ? "border-destructive" : ""}`}
-                  />
-                </div>
-                {errors.mobile && (
-                  <p className="text-[11px] text-destructive font-medium">
-                    {errors.mobile.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Section 3: Address Information */}
-        <Card className="shadow-xs">
-          <CardHeader className="pb-4 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-                  <MapPin className="size-4" />
-                </div>
-                <span>3. Address Information</span>
-              </CardTitle>
-              <span className="text-[11px] font-medium text-muted-foreground">Step 3 of 7</span>
-            </div>
-            <CardDescription className="text-xs mt-1">
-              Physical locations for tax determination (place of supply) and goods delivery.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-4">
-            {/* Billing Address */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="billingAddress" className="text-xs font-semibold">
-                Billing Address <span className="text-destructive">*</span>
+              <Label htmlFor="name" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Display Name <span className="text-destructive">*</span>
               </Label>
-              <Textarea
-                id="billingAddress"
-                rows={3}
-                placeholder="Building / Flat, Street, City, State, PIN Code"
-                {...register("billingAddress")}
-                className={errors.billingAddress ? "border-destructive" : ""}
+              <Input
+                id="name"
+                placeholder="e.g. Sri Lakshmi Traders"
+                {...register("name")}
+                className={`h-9 rounded text-[13px] ${errors.name ? "border-destructive" : ""}`}
               />
-              {errors.billingAddress && (
+              {errors.name && (
                 <p className="text-[11px] text-destructive font-medium">
-                  {errors.billingAddress.message}
+                  {errors.name.message}
                 </p>
               )}
             </div>
 
-            {/* Same as Billing Checkbox */}
-            <div className="flex items-center gap-2 pt-1 pb-1">
+            <div className="space-y-1.5">
+              <Label htmlFor="type" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Customer Type <span className="text-destructive">*</span>
+              </Label>
               <Controller
-                name="sameAsBilling"
+                name="type"
                 control={control}
                 render={({ field }) => (
-                  <Checkbox
-                    id="sameAsBilling"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Select value={field.value} onValueChange={(val) => field.onChange(val || "business")}>
+                    <SelectTrigger id="type" className="h-9 rounded text-[13px]">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CUSTOMER_TYPES.map((type) => (
+                        <SelectItem key={type.value} value={type.value} className="text-[13px]">
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 )}
               />
-              <Label
-                htmlFor="sameAsBilling"
-                className="text-xs cursor-pointer font-normal text-foreground"
-              >
-                Shipping address is identical to billing address
+              {errors.type && (
+                <p className="text-[11px] text-destructive font-medium">
+                  {errors.type.message}
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* 2. CONTACT INFORMATION */}
+        <section className="space-y-4">
+          <h2 className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
+            Contact Information
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="contactPerson" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Primary Contact <span className="text-destructive">*</span>
               </Label>
+              <Input
+                id="contactPerson"
+                placeholder="e.g. Ramesh Kumar"
+                {...register("contactPerson")}
+                className={`h-9 rounded text-[13px] ${errors.contactPerson ? "border-destructive" : ""}`}
+              />
+              {errors.contactPerson && (
+                <p className="text-[11px] text-destructive font-medium">
+                  {errors.contactPerson.message}
+                </p>
+              )}
             </div>
 
-            {/* Shipping Address */}
-            {!watchedSameAsBilling && (
-              <div className="space-y-1.5">
-                <Label htmlFor="shippingAddress" className="text-xs font-semibold">
-                  Shipping Address <span className="text-destructive">*</span>
-                </Label>
-                <Textarea
-                  id="shippingAddress"
-                  rows={3}
-                  placeholder="Delivery address, Warehouse / Facility, PIN Code"
-                  {...register("shippingAddress")}
-                  className={errors.shippingAddress ? "border-destructive" : ""}
-                />
-                {errors.shippingAddress && (
-                  <p className="text-[11px] text-destructive font-medium">
-                    {errors.shippingAddress.message}
-                  </p>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Section 4: GST Information */}
-        <Card className="shadow-xs">
-          <CardHeader className="pb-4 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-                  <FileText className="size-4" />
-                </div>
-                <span>4. GST and Tax Details</span>
-              </CardTitle>
-              <span className="text-[11px] font-medium text-muted-foreground">Step 4 of 7</span>
-            </div>
-            <CardDescription className="text-xs mt-1">
-              Statutory tax identifiers and state of supply for CGST / SGST / IGST calculation.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* GST Registration Type */}
-              <div className="space-y-1.5">
-                <Label htmlFor="gstRegistrationType" className="text-xs font-semibold">
-                  GST Registration Type <span className="text-destructive">*</span>
-                </Label>
-                <Controller
-                  name="gstRegistrationType"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={(val) => field.onChange(val || "Registered")}>
-                      <SelectTrigger id="gstRegistrationType" className="h-9 text-xs">
-                        <SelectValue placeholder="Select GST registration" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {GST_REGISTRATION_TYPES.map((gst) => (
-                          <SelectItem key={gst.value} value={gst.value}>
-                            {gst.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.gstRegistrationType && (
-                  <p className="text-[11px] text-destructive font-medium">
-                    {errors.gstRegistrationType.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Place of Supply */}
-              <div className="space-y-1.5">
-                <Label htmlFor="placeOfSupply" className="text-xs font-semibold">
-                  Place of Supply (State) <span className="text-destructive">*</span>
-                </Label>
-                <Controller
-                  name="placeOfSupply"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={(val) => field.onChange(val || "Karnataka")}>
-                      <SelectTrigger id="placeOfSupply" className="h-9 text-xs">
-                        <SelectValue placeholder="Select State" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {INDIAN_STATES.map((state) => (
-                          <SelectItem key={state.code} value={state.name}>
-                            {state.code} - {state.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.placeOfSupply && (
-                  <p className="text-[11px] text-destructive font-medium">
-                    {errors.placeOfSupply.message}
-                  </p>
-                )}
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Email Address <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="accounts@example.in"
+                {...register("email")}
+                className={`h-9 rounded text-[13px] ${errors.email ? "border-destructive" : ""}`}
+              />
+              {errors.email && (
+                <p className="text-[11px] text-destructive font-medium">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
-            {/* Conditional GSTIN Field with Motion AnimatePresence */}
-            <AnimatePresence>
-              {isGstRequired && (
-                <motion.div
-                  key="gstin-field"
-                  variants={collapseExpandVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className="space-y-1.5 pt-2"
-                >
-                  <Label htmlFor="gstin" className="text-xs font-semibold">
+            <div className="space-y-1.5">
+              <Label htmlFor="mobile" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Mobile Number <span className="text-destructive">*</span>
+              </Label>
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[12px] font-mono text-muted-foreground">
+                  +91
+                </span>
+                <Input
+                  id="mobile"
+                  placeholder="9876543210"
+                  {...register("mobile")}
+                  className={`h-9 rounded pl-10 font-mono text-[13px] ${errors.mobile ? "border-destructive" : ""}`}
+                />
+              </div>
+              {errors.mobile && (
+                <p className="text-[11px] text-destructive font-medium">
+                  {errors.mobile.message}
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* 3. GST & TAX DETAILS */}
+        <section className="space-y-4">
+          <h2 className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
+            Tax Information
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="gstRegistrationType" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                GST Treatment <span className="text-destructive">*</span>
+              </Label>
+              <Controller
+                name="gstRegistrationType"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={(val) => field.onChange(val || "Registered")}>
+                    <SelectTrigger id="gstRegistrationType" className="h-9 rounded text-[13px]">
+                      <SelectValue placeholder="Select GST registration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GST_REGISTRATION_TYPES.map((gst) => (
+                        <SelectItem key={gst.value} value={gst.value} className="text-[13px]">
+                          {gst.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.gstRegistrationType && (
+                <p className="text-[11px] text-destructive font-medium">
+                  {errors.gstRegistrationType.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="placeOfSupply" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Place of Supply <span className="text-destructive">*</span>
+              </Label>
+              <Controller
+                name="placeOfSupply"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={(val) => field.onChange(val || "Karnataka")}>
+                    <SelectTrigger id="placeOfSupply" className="h-9 rounded text-[13px]">
+                      <SelectValue placeholder="Select State" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {INDIAN_STATES.map((state) => (
+                        <SelectItem key={state.code} value={state.name} className="text-[13px]">
+                          {state.code} - {state.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.placeOfSupply && (
+                <p className="text-[11px] text-destructive font-medium">
+                  {errors.placeOfSupply.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {isGstRequired && (
+              <motion.div
+                key="gstin-field"
+                variants={collapseExpandVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                <div className="space-y-1.5">
+                  <Label htmlFor="gstin" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
                     GSTIN (15 characters) <span className="text-destructive">*</span>
                   </Label>
                   <Input
@@ -548,7 +425,7 @@ export default function CreateCustomerPage() {
                         e.target.value = e.target.value.toUpperCase();
                       },
                     })}
-                    className={`font-mono uppercase tracking-wider text-xs sm:text-sm ${
+                    className={`h-9 rounded font-mono uppercase tracking-wider text-[13px] ${
                       errors.gstin ? "border-destructive" : ""
                     }`}
                   />
@@ -557,120 +434,154 @@ export default function CreateCustomerPage() {
                       {errors.gstin.message}
                     </p>
                   ) : (
-                    <p className="text-[10px] text-muted-foreground">
-                      Format: 2-digit state code + 10-digit PAN + 1-digit entity + 1 check character + Z + 1 check sum.
+                    <p className="text-[11px] text-muted-foreground">
+                      Format: 2-digit state code + 10-digit PAN + entity + check character + Z + checksum.
                     </p>
                   )}
-                </motion.div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+
+        {/* 4. ADDRESS INFORMATION */}
+        <section className="space-y-4">
+          <h2 className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
+            Address Information
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="billingAddress" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Billing Address <span className="text-destructive">*</span>
+              </Label>
+              <Textarea
+                id="billingAddress"
+                rows={3}
+                placeholder="Building / Flat, Street, City, State, PIN Code"
+                {...register("billingAddress")}
+                className={`rounded text-[13px] ${errors.billingAddress ? "border-destructive" : ""}`}
+              />
+              {errors.billingAddress && (
+                <p className="text-[11px] text-destructive font-medium">
+                  {errors.billingAddress.message}
+                </p>
               )}
-            </AnimatePresence>
-          </CardContent>
-        </Card>
-
-        {/* Section 5: Payment Terms */}
-        <Card className="shadow-xs">
-          <CardHeader className="pb-4 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-                  <CreditCard className="size-4" />
-                </div>
-                <span>5. Payment Terms and Credit Policy</span>
-              </CardTitle>
-              <span className="text-[11px] font-medium text-muted-foreground">Step 5 of 7</span>
             </div>
-            <CardDescription className="text-xs mt-1">
-              Standard invoice due dates and credit limit safeguards.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Payment Terms */}
-              <div className="space-y-1.5">
-                <Label htmlFor="paymentTerms" className="text-xs font-semibold">
-                  Payment Terms <span className="text-destructive">*</span>
-                </Label>
-                <Controller
-                  name="paymentTerms"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={(val) => field.onChange(val || "Net 30")}>
-                      <SelectTrigger id="paymentTerms" className="h-9 text-xs">
-                        <SelectValue placeholder="Select terms" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PAYMENT_TERMS.map((term) => (
-                          <SelectItem key={term.value} value={term.value}>
-                            {term.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.paymentTerms && (
-                  <p className="text-[11px] text-destructive font-medium">
-                    {errors.paymentTerms.message}
-                  </p>
-                )}
-              </div>
 
-              {/* Credit Limit */}
-              <div className="space-y-1.5">
-                <Label htmlFor="creditLimit" className="text-xs font-semibold">
-                  Credit Limit (INR) <span className="text-muted-foreground font-normal">(Optional)</span>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="shippingAddress" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                  Shipping Address {!watchedSameAsBilling && <span className="text-destructive">*</span>}
                 </Label>
-                <div className="relative">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
-                    ₹
-                  </span>
-                  <Input
-                    id="creditLimit"
-                    type="number"
-                    step="1000"
-                    placeholder="0.00"
-                    {...register("creditLimit", { valueAsNumber: true })}
-                    className="pl-7 tabular-nums"
+                <div className="flex items-center gap-1.5">
+                  <Controller
+                    name="sameAsBilling"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id="sameAsBilling"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
                   />
+                  <Label
+                    htmlFor="sameAsBilling"
+                    className="text-[11px] cursor-pointer font-normal text-muted-foreground"
+                  >
+                    Copy billing address
+                  </Label>
                 </div>
-                {watchedCreditLimit && watchedCreditLimit > 0 ? (
-                  <p className="text-[10px] text-amber-700 dark:text-amber-400 flex items-center gap-1 font-medium">
-                    <Info className="size-3" />
-                    Credit limit warnings will be shown during sales invoice confirmation.
-                  </p>
-                ) : (
-                  <p className="text-[10px] text-muted-foreground">
-                    Leave blank or 0 for unlimited credit.
-                  </p>
-                )}
               </div>
+              <Textarea
+                id="shippingAddress"
+                rows={3}
+                disabled={watchedSameAsBilling}
+                placeholder="Delivery address, Warehouse / Facility, PIN Code"
+                {...register("shippingAddress")}
+                className={`rounded text-[13px] ${errors.shippingAddress ? "border-destructive" : ""}`}
+              />
+              {errors.shippingAddress && (
+                <p className="text-[11px] text-destructive font-medium">
+                  {errors.shippingAddress.message}
+                </p>
+              )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
-        {/* Section 6: Opening Balance */}
-        <Card className="shadow-xs">
-          <CardHeader className="pb-4 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-                  <Banknote className="size-4" />
-                </div>
-                <span>6. Opening Balance</span>
-              </CardTitle>
-              <span className="text-[11px] font-medium text-muted-foreground">Step 6 of 7</span>
+        {/* 5. PAYMENT DEFAULTS & OPENING BALANCE */}
+        <section className="space-y-4">
+          <h2 className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
+            Payment Defaults &amp; Opening Balance
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="paymentTerms" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Payment Terms <span className="text-destructive">*</span>
+              </Label>
+              <Controller
+                name="paymentTerms"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={(val) => field.onChange(val || "Net 30")}>
+                    <SelectTrigger id="paymentTerms" className="h-9 rounded text-[13px]">
+                      <SelectValue placeholder="Select terms" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PAYMENT_TERMS.map((term) => (
+                        <SelectItem key={term.value} value={term.value} className="text-[13px]">
+                          {term.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.paymentTerms && (
+                <p className="text-[11px] text-destructive font-medium">
+                  {errors.paymentTerms.message}
+                </p>
+              )}
             </div>
-            <CardDescription className="text-xs mt-1">
-              Historical ledger balance brought forward as of fiscal year start.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-4">
-            <div className="max-w-md space-y-1.5">
-              <Label htmlFor="openingBalance" className="text-xs font-semibold">
-                Opening Balance (INR) <span className="text-muted-foreground font-normal">(Optional)</span>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="creditLimit" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Credit Limit (INR)
               </Label>
               <div className="relative">
-                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[12px] font-medium text-muted-foreground">
+                  ₹
+                </span>
+                <Input
+                  id="creditLimit"
+                  type="number"
+                  step="1000"
+                  placeholder="0.00"
+                  {...register("creditLimit", { valueAsNumber: true })}
+                  className="h-9 rounded pl-7 tabular-nums text-[13px]"
+                />
+              </div>
+              {watchedCreditLimit && watchedCreditLimit > 0 ? (
+                <p className="text-[11px] text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                  <Info className="size-3 shrink-0" />
+                  Warnings shown on invoice confirmation.
+                </p>
+              ) : (
+                <p className="text-[11px] text-muted-foreground">
+                  Blank or 0 for unlimited credit.
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="openingBalance" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+                Opening Balance (INR)
+              </Label>
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[12px] font-medium text-muted-foreground">
                   ₹
                 </span>
                 <Input
@@ -679,84 +590,69 @@ export default function CreateCustomerPage() {
                   step="100"
                   placeholder="0.00"
                   {...register("openingBalance", { valueAsNumber: true })}
-                  className="pl-7 tabular-nums"
+                  className="h-9 rounded pl-7 tabular-nums text-[13px]"
                 />
               </div>
-              <p className="text-[10px] text-muted-foreground">
-                Positive balance indicates receivables owed by customer.
+              <p className="text-[11px] text-muted-foreground">
+                Positive indicates receivables owed.
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
-        {/* Section 7: Additional Information */}
-        <Card className="shadow-xs">
-          <CardHeader className="pb-4 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-                  <FileEdit className="size-4" />
-                </div>
-                <span>7. Additional Information</span>
-              </CardTitle>
-              <span className="text-[11px] font-medium text-muted-foreground">Step 7 of 7</span>
-            </div>
-            <CardDescription className="text-xs mt-1">
-              Internal notes, delivery instructions, and relationship memos.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="notes" className="text-xs font-semibold">
-                Customer Notes <span className="text-muted-foreground font-normal">(Optional)</span>
-              </Label>
-              <Textarea
-                id="notes"
-                rows={3}
-                placeholder="Special delivery instructions, preferred transport carriers, or contract references..."
-                {...register("notes")}
-              />
-              {errors.notes && (
-                <p className="text-[11px] text-destructive font-medium">
-                  {errors.notes.message}
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* 6. ADDITIONAL INFORMATION */}
+        <section className="space-y-4">
+          <h2 className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
+            Remarks / Notes
+          </h2>
 
-        {/* Form Actions Footer */}
-        <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-4 border-t border-border">
+          <div className="space-y-1.5">
+            <Label htmlFor="notes" className="text-[12px] font-medium text-[#3c4043] dark:text-foreground">
+              Internal Notes
+            </Label>
+            <Textarea
+              id="notes"
+              rows={2}
+              placeholder="Special delivery instructions, preferred transport carriers, or contract references..."
+              {...register("notes")}
+              className="rounded text-[13px]"
+            />
+            {errors.notes && (
+              <p className="text-[11px] text-destructive font-medium">
+                {errors.notes.message}
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* Bottom Form Actions */}
+        <div className="flex items-center justify-end gap-2 pt-4 border-t border-border">
           <Button
             type="button"
             variant="outline"
             onClick={handleCancelClick}
-            className="w-full sm:w-auto text-xs"
+            className="h-8 text-[12px] rounded"
           >
             Cancel
           </Button>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onSaveDraft}
-              disabled={isSubmitting}
-              className="w-full sm:w-auto text-xs gap-1.5"
-            >
-              <FileEdit className="size-3.5 text-muted-foreground" />
-              <span>Save as Draft</span>
-            </Button>
-
-            <Button
-              type="submit"
-              loading={isSubmitting}
-              className="w-full sm:w-auto text-xs gap-1.5 bg-primary text-primary-foreground font-medium shadow-xs hover:bg-primary/90"
-            >
-              <Save className="size-3.5" />
-              <span>Save Customer</span>
-            </Button>
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onSaveDraft}
+            disabled={isSubmitting}
+            className="h-8 text-[12px] gap-1.5 rounded"
+          >
+            <FileEdit className="size-3.5 text-muted-foreground" />
+            <span>Save as Draft</span>
+          </Button>
+          <Button
+            type="submit"
+            loading={isSubmitting}
+            className="h-8 text-[12px] gap-1.5 bg-primary text-primary-foreground font-medium hover:bg-primary/90 rounded px-4"
+          >
+            <Save className="size-3.5" />
+            <span>Save</span>
+          </Button>
         </div>
       </form>
 

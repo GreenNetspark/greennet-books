@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-heading: var(--font-sans);
 
@@ -52,88 +52,99 @@
 }
 
 :root {
-  /* GreenNet Books Brand Palette: Deep Emerald Green (#065f46), Dark Slate (#1e293b), Crisp Neutral */
-  --background: oklch(0.985 0.005 240);
-  --foreground: oklch(0.20 0.04 240);
-  
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.20 0.04 240);
-  
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.20 0.04 240);
+  /* ── GreenNet Books: Zoho Books-inspired light professional palette ── */
 
-  /* Primary - Deep Emerald Green (high authority, trustworthy) */
-  --primary: oklch(0.38 0.12 155);
-  --primary-foreground: oklch(0.99 0 0);
+  /* Page background — cool near-white like a form pad */
+  --background: #f4f5f7;
+  --foreground: #1a1a2e;
 
-  /* Secondary - Clean Slate */
-  --secondary: oklch(0.95 0.01 240);
-  --secondary-foreground: oklch(0.22 0.04 240);
+  /* Content surfaces — pure white cards/tables */
+  --card: #ffffff;
+  --card-foreground: #1a1a2e;
 
-  --muted: oklch(0.96 0.005 240);
-  /* Contrast-hardened muted text for WCAG AA compliance (>=4.5:1 on light backgrounds) */
-  --muted-foreground: oklch(0.42 0.02 240);
+  --popover: #ffffff;
+  --popover-foreground: #1a1a2e;
 
-  --accent: oklch(0.94 0.03 155);
-  --accent-foreground: oklch(0.28 0.10 155);
+  /* Primary action — trusted business blue (Zoho/Google standard) */
+  --primary: #1a73e8;
+  --primary-foreground: #ffffff;
 
-  /* Functional alert colors */
-  --destructive: oklch(0.55 0.22 27);
-  --destructive-foreground: oklch(0.99 0 0);
+  --secondary: #f1f3f4;
+  --secondary-foreground: #3c4043;
 
-  --success: oklch(0.58 0.18 145);
-  --success-foreground: oklch(0.99 0 0);
+  --muted: #f1f3f4;
+  --muted-foreground: #5f6368;
 
-  --warning: oklch(0.70 0.17 65);
-  --warning-foreground: oklch(0.99 0 0);
+  /* Accent — pale blue for hover states / active items */
+  --accent: #e8f0fe;
+  --accent-foreground: #1a73e8;
 
-  --info: oklch(0.55 0.20 250);
-  --info-foreground: oklch(0.99 0 0);
+  --destructive: #c0392b;
+  --destructive-foreground: #ffffff;
 
-  --border: oklch(0.89 0.01 240);
-  --input: oklch(0.87 0.01 240);
-  --ring: oklch(0.44 0.12 155);
-  --radius: 0.5rem;
+  --success: #2e7d32;
+  --success-foreground: #ffffff;
 
-  /* Sidebar styling */
-  --sidebar: oklch(0.16 0.04 240);
-  --sidebar-foreground: oklch(0.92 0.01 240);
-  --sidebar-primary: oklch(0.52 0.15 155);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.22 0.04 240);
-  --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(0.24 0.03 240);
-  --sidebar-ring: oklch(0.52 0.15 155);
+  --warning: #e65100;
+  --warning-foreground: #ffffff;
+
+  --info: #0277bd;
+  --info-foreground: #ffffff;
+
+  --border: #e0e0e0;
+  --input: #dadce0;
+  --ring: #1a73e8;
+  --radius: 0.25rem; /* 4px — professional, not playful */
+
+  /* ── Sidebar — light white sidebar like Zoho Books ── */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #3c4043;
+  --sidebar-primary: #1a73e8;
+  --sidebar-primary-foreground: #1a73e8;
+  --sidebar-accent: #e8f0fe;
+  --sidebar-accent-foreground: #1a73e8;
+  --sidebar-border: #e0e0e0;
+  --sidebar-ring: #1a73e8;
+
+  /* ── Money/financial values — keep emerald brand ── */
+  --money: #2e7d32;
+  --money-negative: #c0392b;
 }
 
 .dark {
-  --background: oklch(0.15 0.03 240);
-  --foreground: oklch(0.96 0.01 240);
-  --card: oklch(0.19 0.03 240);
-  --card-foreground: oklch(0.96 0.01 240);
-  --popover: oklch(0.19 0.03 240);
-  --popover-foreground: oklch(0.96 0.01 240);
-  --primary: oklch(0.55 0.15 155);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.24 0.03 240);
-  --secondary-foreground: oklch(0.96 0.01 240);
-  --muted: oklch(0.23 0.02 240);
-  --muted-foreground: oklch(0.68 0.02 240);
-  --accent: oklch(0.24 0.04 155);
-  --accent-foreground: oklch(0.96 0.01 240);
-  --destructive: oklch(0.65 0.20 27);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.26 0.02 240);
-  --input: oklch(0.26 0.02 240);
-  --ring: oklch(0.55 0.15 155);
-  --sidebar: oklch(0.13 0.03 240);
-  --sidebar-foreground: oklch(0.92 0.01 240);
-  --sidebar-primary: oklch(0.55 0.15 155);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.20 0.03 240);
-  --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(0.22 0.02 240);
-  --sidebar-ring: oklch(0.55 0.15 155);
+  --background: #1a1a2e;
+  --foreground: #e8eaed;
+  --card: #202124;
+  --card-foreground: #e8eaed;
+  --popover: #202124;
+  --popover-foreground: #e8eaed;
+  --primary: #4a90d9;
+  --primary-foreground: #ffffff;
+  --secondary: #2d2d30;
+  --secondary-foreground: #e8eaed;
+  --muted: #2d2d30;
+  --muted-foreground: #9aa0a6;
+  --accent: #1e3a5f;
+  --accent-foreground: #4a90d9;
+  --destructive: #e57373;
+  --destructive-foreground: #ffffff;
+  --success: #81c784;
+  --success-foreground: #1a1a2e;
+  --warning: #ffb74d;
+  --warning-foreground: #1a1a2e;
+  --info: #64b5f6;
+  --info-foreground: #1a1a2e;
+  --border: #3c4043;
+  --input: #3c4043;
+  --ring: #4a90d9;
+  --sidebar: #202124;
+  --sidebar-foreground: #bdc1c6;
+  --sidebar-primary: #4a90d9;
+  --sidebar-primary-foreground: #4a90d9;
+  --sidebar-accent: #1e3a5f;
+  --sidebar-accent-foreground: #4a90d9;
+  --sidebar-border: #3c4043;
+  --sidebar-ring: #4a90d9;
 }
 
 @layer base {
@@ -142,19 +153,19 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-size: 13px;
+    line-height: 1.5;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   html {
     @apply font-sans;
   }
 
-  /* Impeccable Craft Floor: Themed selection, focus & scrollbars */
   ::selection {
     background-color: var(--primary);
     color: var(--primary-foreground);
   }
 
-  /* Smooth customized scrollbars matching brand */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -163,10 +174,22 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: oklch(0.75 0.02 240 / 0.5);
+    background: rgba(0, 0, 0, 0.18);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: oklch(0.60 0.02 240 / 0.7);
+    background: rgba(0, 0, 0, 0.32);
+  }
+
+  /* Zoho-style: financial amounts always tabular, monospaced */
+  .money {
+    font-variant-numeric: tabular-nums;
+    color: var(--money);
+    font-weight: 500;
+  }
+  .money-negative {
+    font-variant-numeric: tabular-nums;
+    color: var(--money-negative);
+    font-weight: 500;
   }
 }

@@ -7,23 +7,21 @@ import {
   Building2,
   MapPin,
   Search,
-  Plus,
   Bell,
   HelpCircle,
+  Settings,
   User,
   ChevronDown,
   Check,
   LogOut,
-  Settings as SettingsIcon,
-  ShieldCheck,
   FileText,
   UserPlus,
   Receipt,
   CreditCard,
   Building,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,25 +31,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const ORGANIZATIONS = [
-  { id: "org-1", name: "GreenNet Technologies Pvt Ltd", gstin: "29AAAAA0000A1Z5", type: "Headquarters" },
+  { id: "org-1", name: "GreenNet Technologies", gstin: "29AAAAA0000A1Z5", type: "Headquarters" },
   { id: "org-2", name: "GreenNet Retail LLP", gstin: "27BBBBB1111B1Z2", type: "Subsidiary" },
-  { id: "org-3", name: "GreenNet Global Solutions", gstin: "33CCCCC2222C1Z9", type: "Branch Entity" },
+  { id: "org-3", name: "GreenNet Global", gstin: "33CCCCC2222C1Z9", type: "Branch Entity" },
 ];
 
 const BRANCHES = [
   { id: "br-all", name: "All Branches" },
-  { id: "br-1", name: "Bengaluru Central (HQ)" },
-  { id: "br-2", name: "Mumbai West Hub" },
-  { id: "br-3", name: "Delhi NCR Office" },
+  { id: "br-1", name: "Bengaluru (HQ)" },
+  { id: "br-2", name: "Mumbai" },
+  { id: "br-3", name: "Delhi NCR" },
 ];
 
 export function Topbar() {
@@ -61,285 +54,219 @@ export function Topbar() {
 
   const handleOrgChange = (org: typeof ORGANIZATIONS[0]) => {
     setSelectedOrg(org);
-    toast.success(`Switched organization to ${org.name}`);
+    toast.success(`Switched to ${org.name}`);
   };
 
   const handleBranchChange = (branch: typeof BRANCHES[0]) => {
     setSelectedBranch(branch);
-    toast.info(`Switched branch context to ${branch.name}`);
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      toast.info(`Global search for "${searchQuery}" is coming in Phase 2`);
-    }
+    toast.info(`Branch: ${branch.name}`);
   };
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      {/* Left side: Sidebar Toggle & Org / Branch Selectors */}
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-40 flex h-12 w-full shrink-0 items-center justify-between border-b border-border bg-card px-3 gap-3">
+
+      {/* Left: Sidebar trigger + Org + Branch */}
+      <div className="flex items-center gap-2 shrink-0">
         <SidebarTrigger
           aria-label="Toggle sidebar"
-          className="text-muted-foreground hover:text-foreground transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-colors h-7 w-7"
         />
 
-        <div className="hidden lg:flex items-center gap-2">
-          {/* 1. Organization Selector */}
-          <DropdownMenu>
-            <DropdownMenuTrigger render={
-              <button
-                type="button"
-                aria-label="Switch organization"
-                className="flex items-center gap-2 h-9 px-3 text-xs font-medium rounded-md border border-border bg-card hover:bg-muted/60 transition-colors text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              />
-            }>
-              <Building2 className="size-3.5 text-primary" />
-              <div className="flex flex-col text-left">
-                <span className="font-semibold truncate max-w-[170px] leading-tight">
-                  {selectedOrg.name}
-                </span>
-                <span className="text-[10px] text-muted-foreground leading-none">
-                  GST: {selectedOrg.gstin}
-                </span>
-              </div>
-              <ChevronDown className="size-3 text-muted-foreground ml-1" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-64 p-1">
-              <DropdownMenuLabel>
-                Switch Organization
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {ORGANIZATIONS.map((org) => (
-                <DropdownMenuItem
-                  key={org.id}
-                  onClick={() => handleOrgChange(org)}
-                  className="flex items-start justify-between p-2 cursor-pointer"
-                >
-                  <div>
-                    <div className="font-medium text-xs text-foreground">{org.name}</div>
-                    <div className="text-[10px] text-muted-foreground">
-                      {org.type} • {org.gstin}
-                    </div>
-                  </div>
-                  {selectedOrg.id === org.id && (
-                    <Check className="size-4 text-primary shrink-0 mt-0.5" />
-                  )}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* 2. Branch Selector */}
-          <DropdownMenu>
-            <DropdownMenuTrigger render={
-              <button
-                type="button"
-                aria-label="Select branch"
-                className="flex items-center gap-1.5 h-9 px-2.5 text-xs font-medium rounded-md border border-border bg-card hover:bg-muted/60 transition-colors text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              />
-            }>
-              <MapPin className="size-3.5 text-muted-foreground" />
-              <span className="truncate max-w-[120px]">{selectedBranch.name}</span>
-              <ChevronDown className="size-3 text-muted-foreground" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48 p-1">
-              <DropdownMenuLabel>
-                Select Branch
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {BRANCHES.map((branch) => (
-                <DropdownMenuItem
-                  key={branch.id}
-                  onClick={() => handleBranchChange(branch)}
-                  className="flex items-center justify-between text-xs cursor-pointer"
-                >
-                  <span>{branch.name}</span>
-                  {selectedBranch.id === branch.id && (
-                    <Check className="size-3.5 text-primary" />
-                  )}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-
-      {/* Middle: 3. Global Search */}
-      <div className="flex-1 max-w-md mx-4 hidden md:block">
-        <form onSubmit={handleSearchSubmit} className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            type="search"
-            aria-label="Global search"
-            placeholder="Search customers, invoices, transactions... (Ctrl+K)"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 pr-12 h-9 text-xs bg-muted/30 border-border focus-visible:bg-background transition-colors"
-          />
-          <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-            ⌘K
-          </kbd>
-        </form>
-      </div>
-
-      {/* Right side: 4. Quick Create, 5. Notifications, 6. Help, 7. Profile */}
-      <div className="flex items-center gap-2">
-        {/* 4. Quick Create */}
+        {/* Org Switcher */}
         <DropdownMenu>
           <DropdownMenuTrigger render={
-            <Button
-              size="sm"
-              aria-label="Quick create transaction"
-              className="h-9 gap-1.5 text-xs font-medium bg-primary text-primary-foreground shadow-xs hover:bg-primary/90"
+            <button
+              type="button"
+              aria-label="Switch organization"
+              className="hidden md:flex items-center gap-1.5 h-7 px-2 text-[13px] font-medium rounded hover:bg-muted/60 transition-colors text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           }>
-            <Plus className="size-3.5" />
-            <span className="hidden sm:inline">Quick Create</span>
-            <ChevronDown className="size-3 ml-0.5 opacity-70" />
+            <Building2 className="size-3.5 text-primary shrink-0" />
+            <span className="max-w-[160px] truncate">{selectedOrg.name}</span>
+            <ChevronDown className="size-3 text-muted-foreground" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 p-1">
-            <DropdownMenuLabel>
-              New Transaction / Entity
-            </DropdownMenuLabel>
+          <DropdownMenuContent align="start" className="w-64 p-1">
+            <DropdownMenuLabel>Switch Organization</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem render={<Link href="/customers/new" className="flex items-center gap-2 text-xs py-2 cursor-pointer font-medium text-primary" />}>
-              <UserPlus className="size-3.5" />
-              <span>Create Customer</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => toast.info("Sales Invoice creation coming in next phase")}
-              className="flex items-center gap-2 text-xs py-2 cursor-pointer"
-            >
-              <FileText className="size-3.5 text-muted-foreground" />
-              <span>Sales Invoice</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => toast.info("Vendor Bill creation coming in next phase")}
-              className="flex items-center gap-2 text-xs py-2 cursor-pointer"
-            >
-              <Receipt className="size-3.5 text-muted-foreground" />
-              <span>Vendor Bill</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => toast.info("Payment recording coming in next phase")}
-              className="flex items-center gap-2 text-xs py-2 cursor-pointer"
-            >
-              <CreditCard className="size-3.5 text-muted-foreground" />
-              <span>Record Payment</span>
-            </DropdownMenuItem>
+            {ORGANIZATIONS.map((org) => (
+              <DropdownMenuItem
+                key={org.id}
+                onClick={() => handleOrgChange(org)}
+                className="flex items-start justify-between p-2 cursor-pointer"
+              >
+                <div>
+                  <div className="font-medium text-[13px] text-foreground">{org.name}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {org.type} · {org.gstin}
+                  </div>
+                </div>
+                {selectedOrg.id === org.id && (
+                  <Check className="size-4 text-primary shrink-0 mt-0.5" />
+                )}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* 5. Notifications */}
-        <Popover>
-          <PopoverTrigger render={
-            <Button
-              variant="ghost"
-              size="icon"
+        {/* Branch chip */}
+        <DropdownMenu>
+          <DropdownMenuTrigger render={
+            <button
+              type="button"
+              aria-label="Select branch"
+              className="hidden lg:flex items-center gap-1 h-6 px-2 text-[12px] rounded-full bg-muted/70 hover:bg-muted transition-colors text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          }>
+            <MapPin className="size-3 shrink-0" />
+            <span className="max-w-[100px] truncate">{selectedBranch.name}</span>
+            <ChevronDown className="size-3" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-44 p-1">
+            <DropdownMenuLabel>Select Branch</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {BRANCHES.map((branch) => (
+              <DropdownMenuItem
+                key={branch.id}
+                onClick={() => handleBranchChange(branch)}
+                className="flex items-center justify-between text-[13px] cursor-pointer"
+              >
+                <span>{branch.name}</span>
+                {selectedBranch.id === branch.id && (
+                  <Check className="size-3.5 text-primary" />
+                )}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Center: Search bar */}
+      <div className="flex-1 max-w-sm hidden md:flex items-center">
+        <div className="relative w-full">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+          <input
+            type="search"
+            aria-label="Global search"
+            placeholder="Search... (Ctrl+K)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchQuery.trim()) {
+                toast.info(`Search for "${searchQuery}" coming in Phase 2`);
+              }
+            }}
+            className="w-full h-7 pl-8 pr-3 text-[13px] rounded bg-muted/60 border border-border hover:border-primary/40 focus:border-primary focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring/30 transition-colors placeholder:text-muted-foreground"
+          />
+        </div>
+      </div>
+
+      {/* Right: Notifications, Help, Settings, Profile */}
+      <div className="flex items-center gap-1 shrink-0">
+
+        {/* Notifications */}
+        <DropdownMenu>
+          <DropdownMenuTrigger render={
+            <button
+              type="button"
               aria-label="View notifications"
-              className="relative size-9 text-muted-foreground hover:text-foreground"
+              className="relative flex items-center justify-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
             />
           }>
             <Bell className="size-4" />
-            <span className="absolute top-1.5 right-1.5 size-2 bg-destructive rounded-full" />
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-80 p-0 shadow-lg">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <span className="text-sm font-semibold text-foreground">Notifications</span>
-              <Badge variant="secondary" className="text-[10px]">3 New</Badge>
+            <span className="absolute top-1 right-1 size-1.5 bg-destructive rounded-full" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80 p-0 shadow-lg">
+            <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+              <span className="text-[13px] font-semibold text-foreground">Notifications</span>
+              <Badge variant="secondary" className="text-[11px] h-5">3 New</Badge>
             </div>
-            <div className="divide-y divide-border text-xs max-h-72 overflow-y-auto">
-              <div className="p-3 hover:bg-muted/50 cursor-pointer transition-colors">
-                <p className="font-medium text-foreground">GST filing due in 4 days</p>
-                <p className="text-muted-foreground text-[11px] mt-0.5">GSTR-3B for October period requires validation</p>
-                <span className="text-[10px] text-muted-foreground mt-1 block">1 hour ago</span>
-              </div>
-              <div className="p-3 hover:bg-muted/50 cursor-pointer transition-colors">
-                <p className="font-medium text-foreground">Customer advance allocated</p>
-                <p className="text-muted-foreground text-[11px] mt-0.5">₹25,000 allocated for Sri Lakshmi Traders</p>
-                <span className="text-[10px] text-muted-foreground mt-1 block">3 hours ago</span>
-              </div>
-              <div className="p-3 hover:bg-muted/50 cursor-pointer transition-colors">
-                <p className="font-medium text-foreground">Bank feed synced</p>
-                <p className="text-muted-foreground text-[11px] mt-0.5">HDFC Bank statement imported 42 transactions</p>
-                <span className="text-[10px] text-muted-foreground mt-1 block">Yesterday</span>
-              </div>
+            <div className="divide-y divide-border text-[13px] max-h-64 overflow-y-auto">
+              {[
+                { title: "GST filing due in 4 days", sub: "GSTR-3B for October requires validation", time: "1 hour ago" },
+                { title: "Customer advance allocated", sub: "₹25,000 allocated for Sri Lakshmi Traders", time: "3 hours ago" },
+                { title: "Bank feed synced", sub: "HDFC Bank: 42 transactions imported", time: "Yesterday" },
+              ].map((n, i) => (
+                <div key={i} className="p-3 hover:bg-muted/40 cursor-pointer transition-colors">
+                  <p className="font-medium text-foreground leading-tight">{n.title}</p>
+                  <p className="text-muted-foreground text-[11px] mt-0.5">{n.sub}</p>
+                  <span className="text-[11px] text-muted-foreground/70 mt-1 block">{n.time}</span>
+                </div>
+              ))}
             </div>
             <div className="p-2 border-t border-border text-center">
               <button
                 type="button"
-                onClick={() => toast.info("Notification center coming soon")}
-                className="text-xs text-primary font-medium hover:underline cursor-pointer"
+                onClick={() => toast.info("Notification centre coming soon")}
+                className="text-[12px] text-primary font-medium hover:underline cursor-pointer"
               >
                 View all notifications
               </button>
             </div>
-          </PopoverContent>
-        </Popover>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        {/* 6. Help Icon */}
+        {/* Help */}
         <DropdownMenu>
           <DropdownMenuTrigger render={
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Help and support resources"
-              className="size-9 text-muted-foreground hover:text-foreground"
+            <button
+              type="button"
+              aria-label="Help and support"
+              className="flex items-center justify-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
             />
           }>
             <HelpCircle className="size-4" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 p-1 text-xs">
-            <DropdownMenuLabel>
-              GreenNet Books Help
-            </DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-52 p-1 text-[13px]">
+            <DropdownMenuLabel>Help & Support</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => toast.info("Opening Documentation")} className="cursor-pointer">
               Documentation & Guides
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => toast.info("Opening GST Masterclass")} className="cursor-pointer">
-              Indian GST Compliance Guide
+            <DropdownMenuItem onClick={() => toast.info("Opening GST Guide")} className="cursor-pointer">
+              Indian GST Compliance
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => toast.info("Opening Support Ticket dialog")} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => toast.info("Opening Support")} className="cursor-pointer">
               Contact CA Support
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <div className="px-2 py-1.5 text-[10px] text-muted-foreground">
-              GreenNet Books v1.0.0 (SaaS Edition)
-            </div>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* 7. User Profile Menu */}
+        {/* Settings */}
+        <button
+          type="button"
+          aria-label="Settings"
+          onClick={() => toast.info("Settings coming soon")}
+          className="flex items-center justify-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+        >
+          <Settings className="size-4" />
+        </button>
+
+        {/* Divider */}
+        <div className="h-5 w-px bg-border mx-1" />
+
+        {/* User Profile */}
         <DropdownMenu>
           <DropdownMenuTrigger render={
             <button
               type="button"
               aria-label="User profile menu"
-              className="flex items-center gap-2 pl-2 focus:outline-none cursor-pointer"
+              className="flex items-center gap-1.5 focus:outline-none cursor-pointer hover:bg-muted/60 rounded px-1.5 h-7 transition-colors"
             />
           }>
-            <div className="size-8 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-semibold text-xs">
+            <div className="size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-[11px]">
               PB
             </div>
-            <div className="hidden xl:flex flex-col text-left">
-              <span className="text-xs font-semibold text-foreground leading-tight">
-                Pavan Bhat
-              </span>
-              <span className="text-[10px] text-muted-foreground leading-tight">
-                Finance Admin
-              </span>
+            <div className="hidden xl:flex flex-col text-left leading-none">
+              <span className="text-[13px] font-medium text-foreground">Pavan Bhat</span>
             </div>
             <ChevronDown className="size-3 text-muted-foreground hidden xl:block" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 p-1 text-xs">
-            <div className="p-2 border-b border-border">
+          <DropdownMenuContent align="end" className="w-56 p-1 text-[13px]">
+            <div className="p-2.5 border-b border-border">
               <p className="font-semibold text-foreground">Pavan Bhat</p>
               <p className="text-[11px] text-muted-foreground">shreekrishnabhat.km@gmail.com</p>
-              <div className="mt-1.5 flex items-center gap-1.5">
-                <Badge variant="outline" className="text-[10px] text-primary border-primary/30 bg-primary/5">
+              <div className="mt-1.5">
+                <Badge variant="outline" className="text-[11px] text-primary border-primary/30 bg-primary/5">
                   <ShieldCheck className="size-3 mr-1" /> Organization Owner
                 </Badge>
               </div>
@@ -353,8 +280,8 @@ export function Topbar() {
                 <Building className="size-3.5 mr-2 text-muted-foreground" />
                 <span>Organization Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("Preferences dialog coming soon")} className="cursor-pointer">
-                <SettingsIcon className="size-3.5 mr-2 text-muted-foreground" />
+              <DropdownMenuItem onClick={() => toast.info("Preferences coming soon")} className="cursor-pointer">
+                <Settings className="size-3.5 mr-2 text-muted-foreground" />
                 <span>Preferences</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>

@@ -21,7 +21,7 @@ export function AppShell({ children }: AppShellProps) {
         <AppSidebar />
         <SidebarInset className="flex flex-1 flex-col overflow-x-hidden min-w-0">
           <Topbar />
-          <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          <main className="flex-1 p-4 md:p-5 max-w-[1400px] w-full">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={pathname}
