@@ -1,0 +1,23 @@
+{
+  "name": "greennet-books",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GreenNet Books - Cloud Accounting & Financial Management Platform",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=web",
+    "build": "npm run build --workspace=web",
+    "start": "npm run start --workspace=web",
+    "lint": "npm run lint --workspace=web"
+  },
+  "keywords": [
+    "accounting",
+    "gst",
+    "saas",
+    "nextjs",
+    "financial-management"
+  ],
+  "author": "GreenNetSpark"
+}
