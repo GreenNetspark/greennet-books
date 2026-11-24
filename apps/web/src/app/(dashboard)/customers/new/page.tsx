@@ -144,9 +144,9 @@ export default function CreateCustomerPage() {
 
   return (
     <div className="max-w-5xl space-y-4 pb-12">
-      {/* Zoho-style Single-Row Header */}
-      <div className="flex items-center justify-between border-b border-border pb-3">
-        <div className="flex items-center gap-2.5">
+      {/* Zoho-style Responsive Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-3">
+        <div className="flex items-center gap-2.5 min-w-0">
           <Link
             href="/customers"
             onClick={(e) => {
@@ -155,17 +155,17 @@ export default function CreateCustomerPage() {
                 setShowCancelDialog(true);
               }
             }}
-            className="flex items-center justify-center size-7 rounded border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            className="flex items-center justify-center size-7 rounded border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0"
             aria-label="Back to customers"
           >
             <ArrowLeft className="size-3.5" />
           </Link>
-          <h1 className="text-[18px] font-semibold text-foreground leading-tight">
+          <h1 className="text-[18px] font-semibold text-foreground leading-tight truncate">
             New Customer
           </h1>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           <Button
             variant="outline"
             size="sm"
@@ -246,20 +246,24 @@ export default function CreateCustomerPage() {
               <Controller
                 name="type"
                 control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={(val) => field.onChange(val || "business")}>
-                    <SelectTrigger id="type" className="h-9 rounded text-[13px]">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CUSTOMER_TYPES.map((type) => (
-                        <SelectItem key={type.value} value={type.value} className="text-[13px]">
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                render={({ field }) => {
+                  const selectedLabel =
+                    CUSTOMER_TYPES.find((t) => t.value === field.value)?.label ?? "Select type";
+                  return (
+                    <Select value={field.value} onValueChange={(val) => field.onChange(val || "business")}>
+                      <SelectTrigger id="type" className="h-9 rounded text-[13px]">
+                        <SelectValue placeholder="Select type">{selectedLabel}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CUSTOMER_TYPES.map((type) => (
+                          <SelectItem key={type.value} value={type.value} className="text-[13px]">
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
               />
               {errors.type && (
                 <p className="text-[11px] text-destructive font-medium">
@@ -350,20 +354,25 @@ export default function CreateCustomerPage() {
               <Controller
                 name="gstRegistrationType"
                 control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={(val) => field.onChange(val || "Registered")}>
-                    <SelectTrigger id="gstRegistrationType" className="h-9 rounded text-[13px]">
-                      <SelectValue placeholder="Select GST registration" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GST_REGISTRATION_TYPES.map((gst) => (
-                        <SelectItem key={gst.value} value={gst.value} className="text-[13px]">
-                          {gst.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                render={({ field }) => {
+                  const selectedLabel =
+                    GST_REGISTRATION_TYPES.find((g) => g.value === field.value)?.label ??
+                    "Select GST registration";
+                  return (
+                    <Select value={field.value} onValueChange={(val) => field.onChange(val || "Registered")}>
+                      <SelectTrigger id="gstRegistrationType" className="h-9 rounded text-[13px]">
+                        <SelectValue placeholder="Select GST registration">{selectedLabel}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GST_REGISTRATION_TYPES.map((gst) => (
+                          <SelectItem key={gst.value} value={gst.value} className="text-[13px]">
+                            {gst.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
               />
               {errors.gstRegistrationType && (
                 <p className="text-[11px] text-destructive font-medium">
@@ -379,20 +388,26 @@ export default function CreateCustomerPage() {
               <Controller
                 name="placeOfSupply"
                 control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={(val) => field.onChange(val || "Karnataka")}>
-                    <SelectTrigger id="placeOfSupply" className="h-9 rounded text-[13px]">
-                      <SelectValue placeholder="Select State" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {INDIAN_STATES.map((state) => (
-                        <SelectItem key={state.code} value={state.name} className="text-[13px]">
-                          {state.code} - {state.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                render={({ field }) => {
+                  const matchedState = INDIAN_STATES.find((s) => s.name === field.value);
+                  const selectedLabel = matchedState
+                    ? `${matchedState.code} - ${matchedState.name}`
+                    : "Select State";
+                  return (
+                    <Select value={field.value} onValueChange={(val) => field.onChange(val || "Karnataka")}>
+                      <SelectTrigger id="placeOfSupply" className="h-9 rounded text-[13px]">
+                        <SelectValue placeholder="Select State">{selectedLabel}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {INDIAN_STATES.map((state) => (
+                          <SelectItem key={state.code} value={state.name} className="text-[13px]">
+                            {state.code} - {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
               />
               {errors.placeOfSupply && (
                 <p className="text-[11px] text-destructive font-medium">
@@ -525,20 +540,24 @@ export default function CreateCustomerPage() {
               <Controller
                 name="paymentTerms"
                 control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={(val) => field.onChange(val || "Net 30")}>
-                    <SelectTrigger id="paymentTerms" className="h-9 rounded text-[13px]">
-                      <SelectValue placeholder="Select terms" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PAYMENT_TERMS.map((term) => (
-                        <SelectItem key={term.value} value={term.value} className="text-[13px]">
-                          {term.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                render={({ field }) => {
+                  const selectedLabel =
+                    PAYMENT_TERMS.find((t) => t.value === field.value)?.label ?? "Select terms";
+                  return (
+                    <Select value={field.value} onValueChange={(val) => field.onChange(val || "Net 30")}>
+                      <SelectTrigger id="paymentTerms" className="h-9 rounded text-[13px]">
+                        <SelectValue placeholder="Select terms">{selectedLabel}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PAYMENT_TERMS.map((term) => (
+                          <SelectItem key={term.value} value={term.value} className="text-[13px]">
+                            {term.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
               />
               {errors.paymentTerms && (
                 <p className="text-[11px] text-destructive font-medium">
@@ -626,12 +645,12 @@ export default function CreateCustomerPage() {
         </section>
 
         {/* Bottom Form Actions */}
-        <div className="flex items-center justify-end gap-2 pt-4 border-t border-border">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 pt-4 border-t border-border">
           <Button
             type="button"
             variant="outline"
             onClick={handleCancelClick}
-            className="h-8 text-[12px] rounded"
+            className="h-8 text-[12px] rounded w-full sm:w-auto"
           >
             Cancel
           </Button>
@@ -640,7 +659,7 @@ export default function CreateCustomerPage() {
             variant="outline"
             onClick={onSaveDraft}
             disabled={isSubmitting}
-            className="h-8 text-[12px] gap-1.5 rounded"
+            className="h-8 text-[12px] gap-1.5 rounded w-full sm:w-auto"
           >
             <FileEdit className="size-3.5 text-muted-foreground" />
             <span>Save as Draft</span>
@@ -648,7 +667,7 @@ export default function CreateCustomerPage() {
           <Button
             type="submit"
             loading={isSubmitting}
-            className="h-8 text-[12px] gap-1.5 bg-primary text-primary-foreground font-medium hover:bg-primary/90 rounded px-4"
+            className="h-8 text-[12px] gap-1.5 bg-primary text-primary-foreground font-medium hover:bg-primary/90 rounded px-4 w-full sm:w-auto"
           >
             <Save className="size-3.5" />
             <span>Save</span>

@@ -43,7 +43,8 @@ export function getCustomerColumns({
               type="button"
               onClick={() =>
                 toast.info(
-                  `Customer Details (UI-CUST-003) for ${customer.name} will be released in Phase 2.`
+                  `Customer Details (UI-CUST-003) for ${customer.name} will be released in Phase 2.`,
+                  { id: "coming-soon" }
                 )
               }
               className="font-medium text-[13px] text-primary hover:underline text-left truncate max-w-[230px] cursor-pointer leading-tight"
@@ -179,7 +180,8 @@ export function getCustomerColumns({
                 <DropdownMenuItem
                   onClick={() =>
                     toast.info(
-                      `View Details (UI-CUST-003) for ${customer.name} coming in Phase 2.`
+                      `View Details (UI-CUST-003) for ${customer.name} coming in Phase 2.`,
+                      { id: "coming-soon" }
                     )
                   }
                   className="cursor-pointer"
@@ -189,7 +191,9 @@ export function getCustomerColumns({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
-                    toast.info(`Edit form for ${customer.name} coming in Phase 2.`)
+                    toast.info(`Edit form for ${customer.name} coming in Phase 2.`, {
+                      id: "coming-soon",
+                    })
                   }
                   className="cursor-pointer"
                 >
@@ -198,7 +202,9 @@ export function getCustomerColumns({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
-                    toast.info(`Creating invoice for ${customer.name}...`)
+                    toast.info(`Creating invoice for ${customer.name}...`, {
+                      id: "coming-soon",
+                    })
                   }
                   className="cursor-pointer"
                 >

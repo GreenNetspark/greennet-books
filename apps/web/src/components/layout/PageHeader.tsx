@@ -18,7 +18,7 @@ export function PageHeader({
   className = "",
 }: PageHeaderProps) {
   return (
-    <div className={`flex items-center justify-between mb-4 ${className}`}>
+    <div className={`flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between mb-4 ${className}`}>
       <div className="flex items-center gap-2 min-w-0">
         <h1 className="text-[18px] font-semibold text-foreground leading-tight truncate">
           {title}
@@ -26,7 +26,7 @@ export function PageHeader({
         {badge && <div className="shrink-0">{badge}</div>}
       </div>
       {actions && (
-        <div className="flex items-center gap-2 shrink-0 ml-4">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           {actions}
         </div>
       )}

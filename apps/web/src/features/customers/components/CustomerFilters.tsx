@@ -30,6 +30,25 @@ interface CustomerFiltersProps {
   onReset: () => void;
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  all: "All Status",
+  active: "Active",
+  inactive: "Inactive",
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  all: "All Types",
+  business: "Business",
+  individual: "Individual",
+};
+
+const STATE_LABELS: Record<string, string> = {
+  normal: "State: Normal",
+  empty: "State: Empty",
+  error: "State: Error",
+  permission_denied: "State: Forbidden",
+};
+
 export function CustomerFilters({
   searchQuery,
   onSearchChange,
@@ -51,9 +70,9 @@ export function CustomerFilters({
     stateOverride !== "normal";
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded border border-border bg-card px-3 py-2">
+    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 rounded border border-border bg-card px-3 py-2.5">
       {/* Left: Search + Dropdowns */}
-      <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[260px]">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 flex-1 min-w-0">
         <div className="w-full sm:w-64">
           <SearchInput
             value={searchQuery}
@@ -63,36 +82,42 @@ export function CustomerFilters({
           />
         </div>
 
-        {/* Status Filter */}
-        <div className="w-[120px]">
-          <Select value={statusFilter} onValueChange={(val) => onStatusChange(val || "all")}>
-            <SelectTrigger className="h-8 text-[12px] rounded">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
+          {/* Status Filter */}
+          <div className="w-full sm:w-[120px]">
+            <Select value={statusFilter} onValueChange={(val) => onStatusChange(val || "all")}>
+              <SelectTrigger size="sm" className="h-8 text-[12px] rounded">
+                <SelectValue placeholder="Status">
+                  {STATUS_LABELS[statusFilter] ?? "All Status"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Type Filter */}
-        <div className="w-[125px]">
-          <Select value={typeFilter} onValueChange={(val) => onTypeChange(val || "all")}>
-            <SelectTrigger className="h-8 text-[12px] rounded">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="business">Business</SelectItem>
-              <SelectItem value="individual">Individual</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Type Filter */}
+          <div className="w-full sm:w-[125px]">
+            <Select value={typeFilter} onValueChange={(val) => onTypeChange(val || "all")}>
+              <SelectTrigger size="sm" className="h-8 text-[12px] rounded">
+                <SelectValue placeholder="Type">
+                  {TYPE_LABELS[typeFilter] ?? "All Types"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="business">Business</SelectItem>
+                <SelectItem value="individual">Individual</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Balance Only */}
-        <div className="flex items-center gap-1.5 pl-1">
+        <div className="flex items-center gap-1.5 sm:pl-1">
           <Checkbox
             id="hasBalance"
             checked={hasBalanceOnly}
@@ -105,15 +130,17 @@ export function CustomerFilters({
       </div>
 
       {/* Right: QA State Simulator & Reset */}
-      <div className="flex items-center gap-2">
-        <div className="w-[140px]">
+      <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+        <div className="w-full sm:w-[145px]">
           <Select
             value={stateOverride}
             onValueChange={(val: any) => onStateOverrideChange(val || "normal")}
           >
-            <SelectTrigger className="h-8 text-[12px] border-dashed text-muted-foreground rounded">
-              <SlidersHorizontal className="size-3 mr-1" />
-              <SelectValue placeholder="State" />
+            <SelectTrigger size="sm" className="h-8 text-[12px] border-dashed text-muted-foreground rounded">
+              <SlidersHorizontal className="size-3 mr-1 shrink-0" />
+              <SelectValue placeholder="State">
+                {STATE_LABELS[stateOverride] ?? "State: Normal"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="normal">State: Normal</SelectItem>
@@ -129,7 +156,7 @@ export function CustomerFilters({
             variant="ghost"
             size="sm"
             onClick={onReset}
-            className="h-8 text-[12px] gap-1 text-muted-foreground hover:text-foreground rounded px-2"
+            className="h-8 text-[12px] gap-1 text-muted-foreground hover:text-foreground rounded px-2 shrink-0"
           >
             <RotateCcw className="size-3" />
             Reset

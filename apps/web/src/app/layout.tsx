@@ -18,7 +18,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans">
         <TooltipProvider>
           {children}
-          <Toaster position="top-right" richColors />
+          <Toaster position="bottom-right" visibleToasts={2} duration={2500} richColors />
         </TooltipProvider>
       </body>
     </html>
