@@ -1,18 +1,20 @@
+import type { ComponentType } from "react";
 import {
-  LayoutDashboard,
-  ShoppingCart,
-  ShoppingBag,
-  Landmark,
-  BookOpen,
-  Package,
-  Receipt,
-  Calculator,
-  Building,
-  BarChart3,
-  Bot,
-  Settings,
-  LucideIcon,
-} from "lucide-react";
+  IconSmartHome,
+  IconShoppingCart,
+  IconShoppingBag,
+  IconBuildingBank,
+  IconBook2,
+  IconPackages,
+  IconReceipt,
+  IconReceiptTax,
+  IconBuildingSkyscraper,
+  IconChartBar,
+  IconSparkles,
+  IconSettings,
+} from "@tabler/icons-react";
+
+export type NavIcon = ComponentType<{ className?: string; stroke?: number }>;
 
 export interface NavSubItem {
   title: string;
@@ -23,7 +25,8 @@ export interface NavSubItem {
 
 export interface NavGroup {
   title: string;
-  icon: LucideIcon;
+  shortTitle?: string;
+  icon: NavIcon;
   href?: string;
   items?: NavSubItem[];
   defaultOpen?: boolean;
@@ -31,13 +34,15 @@ export interface NavGroup {
 
 export const navigationConfig: NavGroup[] = [
   {
-    title: "Overview",
-    icon: LayoutDashboard,
+    title: "Home",
+    shortTitle: "Home",
+    icon: IconSmartHome,
     href: "/dashboard",
   },
   {
     title: "Sales",
-    icon: ShoppingCart,
+    shortTitle: "Sales",
+    icon: IconShoppingCart,
     defaultOpen: true,
     items: [
       { title: "Customers", href: "/customers" },
@@ -51,7 +56,8 @@ export const navigationConfig: NavGroup[] = [
   },
   {
     title: "Purchases",
-    icon: ShoppingBag,
+    shortTitle: "Purchases",
+    icon: IconShoppingBag,
     items: [
       { title: "Vendors", href: "/purchases/vendors", isComingSoon: true },
       { title: "Purchase Orders", href: "/purchases/orders", isComingSoon: true },
@@ -63,7 +69,8 @@ export const navigationConfig: NavGroup[] = [
   },
   {
     title: "Banking",
-    icon: Landmark,
+    shortTitle: "Banking",
+    icon: IconBuildingBank,
     items: [
       { title: "Bank Accounts", href: "/banking/accounts", isComingSoon: true },
       { title: "Cash Accounts", href: "/banking/cash", isComingSoon: true },
@@ -73,8 +80,9 @@ export const navigationConfig: NavGroup[] = [
     ],
   },
   {
-    title: "Accounting",
-    icon: BookOpen,
+    title: "Accountant",
+    shortTitle: "Account...",
+    icon: IconBook2,
     items: [
       { title: "Chart of Accounts", href: "/accounting/coa", isComingSoon: true },
       { title: "Journal Entries", href: "/accounting/journals", isComingSoon: true },
@@ -88,7 +96,8 @@ export const navigationConfig: NavGroup[] = [
   },
   {
     title: "Inventory",
-    icon: Package,
+    shortTitle: "Items",
+    icon: IconPackages,
     items: [
       { title: "Items", href: "/inventory/items", isComingSoon: true },
       { title: "Item Categories", href: "/inventory/categories", isComingSoon: true },
@@ -100,7 +109,8 @@ export const navigationConfig: NavGroup[] = [
   },
   {
     title: "Expenses",
-    icon: Receipt,
+    shortTitle: "Expenses",
+    icon: IconReceipt,
     items: [
       { title: "Expenses", href: "/expenses", isComingSoon: true },
       { title: "Expense Categories", href: "/expenses/categories", isComingSoon: true },
@@ -108,8 +118,9 @@ export const navigationConfig: NavGroup[] = [
     ],
   },
   {
-    title: "Taxation",
-    icon: Calculator,
+    title: "Filing & GST",
+    shortTitle: "GST",
+    icon: IconReceiptTax,
     items: [
       { title: "GST Settings", href: "/taxation/gst-settings", isComingSoon: true },
       { title: "GST Transactions", href: "/taxation/gst-transactions", isComingSoon: true },
@@ -121,7 +132,8 @@ export const navigationConfig: NavGroup[] = [
   },
   {
     title: "Fixed Assets",
-    icon: Building,
+    shortTitle: "Assets",
+    icon: IconBuildingSkyscraper,
     items: [
       { title: "Asset Register", href: "/assets/register", isComingSoon: true },
       { title: "Depreciation", href: "/assets/depreciation", isComingSoon: true },
@@ -130,7 +142,8 @@ export const navigationConfig: NavGroup[] = [
   },
   {
     title: "Reports",
-    icon: BarChart3,
+    shortTitle: "Reports",
+    icon: IconChartBar,
     items: [
       { title: "Financial Reports", href: "/reports/financial", isComingSoon: true },
       { title: "Sales Reports", href: "/reports/sales", isComingSoon: true },
@@ -143,7 +156,8 @@ export const navigationConfig: NavGroup[] = [
   },
   {
     title: "Automation",
-    icon: Bot,
+    shortTitle: "Auto",
+    icon: IconSparkles,
     items: [
       { title: "AI Assistant", href: "/automation/ai", isComingSoon: true },
       { title: "Notifications", href: "/automation/notifications", isComingSoon: true },
@@ -152,7 +166,8 @@ export const navigationConfig: NavGroup[] = [
   },
   {
     title: "Settings",
-    icon: Settings,
+    shortTitle: "Settings",
+    icon: IconSettings,
     items: [
       { title: "Organization", href: "/settings/organization", isComingSoon: true },
       { title: "Branches", href: "/settings/branches", isComingSoon: true },

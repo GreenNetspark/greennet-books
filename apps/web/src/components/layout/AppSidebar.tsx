@@ -4,21 +4,31 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "motion/react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarHeader,
+  SidebarFooter,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { navigationConfig } from "@/config/navigation";
-import { BookOpenCheck, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  IconChevronRight,
+  IconLayoutSidebarLeftCollapse,
+  IconLayoutSidebarLeftExpand,
+} from "@tabler/icons-react";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { state, isMobile, setOpen, setOpenMobile, toggleSidebar } = useSidebar();
+  const isCollapsed = state === "collapsed" && !isMobile;
 
   // Single-open exclusive accordion: only 1 module section open at a time
   const [openGroup, setOpenGroup] = useState<string | null>(() => {
@@ -72,138 +82,212 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
-      style={{ "--sidebar-width": "220px" } as React.CSSProperties}
+      collapsible="icon"
+      className="border-r border-sidebar-border bg-sidebar text-sidebar-foreground select-none"
     >
-      {/* Brand Header */}
-      <SidebarHeader className="border-b border-sidebar-border px-4 h-12 flex flex-row items-center gap-3 shrink-0">
-        <Link
-          href="/dashboard"
-          onClick={handleNavClick}
-          className="flex items-center gap-2.5 group focus:outline-none"
-        >
-          <div className="flex size-7 items-center justify-center rounded bg-primary text-primary-foreground shadow-sm group-hover:opacity-90 transition-opacity">
-            <BookOpenCheck className="size-4" />
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="font-semibold text-[13px] text-sidebar-foreground leading-tight">
-              GreenNet Books
-            </span>
-            <span className="text-[10px] text-muted-foreground leading-tight mt-0.5">
-              Smart Accounting
-            </span>
-          </div>
-        </Link>
-      </SidebarHeader>
-
       {/* Nav Content */}
-      <SidebarContent className="py-2 overflow-y-auto">
-        <SidebarMenu className="gap-0.5 px-0">
+      <SidebarContent className="py-2.5 px-2 overflow-y-auto overflow-x-hidden">
+        <SidebarMenu className="gap-1">
           {navigationConfig.map((group) => {
-            const hasSubItems = group.items && group.items.length > 0;
+            const hasSubItems = Boolean(group.items && group.items.length > 0);
+            const directActive = !hasSubItems && isDirectActive(group.href);
+            const groupActive =
+              hasSubItems && group.items?.some((item) => isSubActive(item.href));
+            const isOpen = openGroup === group.title;
+            const Icon = group.icon;
 
-            if (!hasSubItems) {
-              const active = isDirectActive(group.href);
-              return (
-                <SidebarMenuItem key={group.title}>
-                  <SidebarMenuButton
-                    render={<Link href={group.href || "/dashboard"} onClick={handleNavClick} />}
-                    isActive={active}
-                    className={`flex items-center gap-2.5 w-full px-4 py-0 h-9 text-[13px] rounded-none transition-colors
-                      ${
-                        active
-                          ? "bg-accent text-sidebar-primary font-medium border-l-[3px] border-sidebar-primary pl-[13px]"
-                          : "text-sidebar-foreground hover:bg-muted/60 border-l-[3px] border-transparent pl-[13px]"
-                      }`}
-                  >
-                    <group.icon
-                      className={`size-4 shrink-0 ${
-                        active ? "text-sidebar-primary" : "text-muted-foreground"
+            /* ── COLLAPSED ICON RAIL (Zoho Books Style) ── */
+            if (isCollapsed) {
+              const active = directActive || groupActive;
+              const buttonContent = (
+                <div className="relative flex flex-col items-center justify-center gap-1 py-2 px-1 w-full">
+                  <Icon className="size-5 shrink-0" stroke={1.75} />
+                  <span className="text-[10.5px] leading-tight truncate max-w-[60px] text-center font-medium">
+                    {group.shortTitle ?? group.title}
+                  </span>
+                  {hasSubItems && (
+                    <span
+                      aria-hidden="true"
+                      className={`absolute bottom-1 right-1 size-0 border-b-[5px] border-l-[5px] border-l-transparent ${
+                        active ? "border-b-white/80" : "border-b-muted-foreground/60"
                       }`}
                     />
-                    <span>{group.title}</span>
-                  </SidebarMenuButton>
+                  )}
+                </div>
+              );
+
+              return (
+                <SidebarMenuItem key={group.title} className="flex justify-center">
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        !hasSubItems ? (
+                          <Link
+                            href={group.href || "/dashboard"}
+                            onClick={handleNavClick}
+                            className={`flex w-full rounded-lg transition-colors ${
+                              active
+                                ? "bg-primary text-white shadow-xs"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                            }`}
+                          >
+                            {buttonContent}
+                          </Link>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setOpen(true);
+                              setOpenGroup(group.title);
+                            }}
+                            className={`flex w-full rounded-lg transition-colors cursor-pointer ${
+                              active
+                                ? "bg-primary text-white shadow-xs"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                            }`}
+                          >
+                            {buttonContent}
+                          </button>
+                        )
+                      }
+                    />
+                    <TooltipContent side="right" className="text-[12px] font-medium">
+                      {group.title}
+                    </TooltipContent>
+                  </Tooltip>
                 </SidebarMenuItem>
               );
             }
 
-            const isOpen = openGroup === group.title;
-            const isGroupActive = group.items?.some((item) => isSubActive(item.href));
+            /* ── EXPANDED SIDEBAR (Direct Link, e.g. Home) ── */
+            if (!hasSubItems) {
+              return (
+                <SidebarMenuItem key={group.title}>
+                  <Link
+                    href={group.href || "/dashboard"}
+                    onClick={handleNavClick}
+                    className={`flex items-center gap-3 w-full px-3 h-10 rounded-lg text-[14px] transition-colors ${
+                      directActive
+                        ? "bg-primary text-white font-medium shadow-xs"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground font-normal"
+                    }`}
+                  >
+                    <Icon
+                      className={`size-[19px] shrink-0 ${
+                        directActive ? "text-white" : "text-muted-foreground"
+                      }`}
+                      stroke={1.75}
+                    />
+                    <span className="truncate">{group.title}</span>
+                  </Link>
+                </SidebarMenuItem>
+              );
+            }
 
+            /* ── EXPANDED SIDEBAR (Exclusive Accordion Dropdown) ── */
             return (
               <SidebarMenuItem key={group.title}>
-                {/* Accordion Trigger */}
                 <button
                   type="button"
                   onClick={() => handleToggleGroup(group.title)}
                   aria-expanded={isOpen}
-                  className={`flex items-center justify-between w-full px-4 h-9 text-[13px] transition-colors cursor-pointer border-l-[3px] pl-[13px]
-                    ${
-                      isGroupActive || isOpen
-                        ? "text-foreground font-medium border-transparent bg-muted/30"
-                        : "text-sidebar-foreground hover:bg-muted/60 border-transparent"
-                    }`}
+                  className={`flex items-center gap-2 w-full px-2.5 h-10 rounded-lg text-[14px] transition-colors cursor-pointer ${
+                    groupActive
+                      ? "text-primary font-semibold bg-accent/70"
+                      : isOpen
+                        ? "text-foreground font-medium bg-sidebar-accent/70"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground font-normal"
+                  }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <group.icon
-                      className={`size-4 shrink-0 ${
-                        isGroupActive || isOpen ? "text-primary" : "text-muted-foreground"
-                      }`}
-                    />
-                    <span className="truncate">{group.title}</span>
-                  </div>
-                  {isOpen ? (
-                    <ChevronDown className="size-3.5 text-muted-foreground shrink-0" />
-                  ) : (
-                    <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
-                  )}
+                  <IconChevronRight
+                    className={`size-3.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-out ${
+                      isOpen ? "rotate-90 text-foreground" : ""
+                    }`}
+                    stroke={2}
+                  />
+                  <Icon
+                    className={`size-[19px] shrink-0 ${
+                      groupActive ? "text-primary" : "text-muted-foreground"
+                    }`}
+                    stroke={1.75}
+                  />
+                  <span className="truncate">{group.title}</span>
                 </button>
 
-                {/* Dropdown Sub-items (only rendered when this group is open) */}
-                {isOpen && (
-                  <div className="py-0.5 bg-muted/15 border-b border-border/40">
-                    {group.items?.map((subItem) => {
-                      const subActive = isSubActive(subItem.href);
+                {/* Smooth Animated Submenu */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key={`${group.title}-submenu`}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="py-1 pl-7 pr-1 space-y-0.5">
+                        {group.items?.map((subItem) => {
+                          const subActive = isSubActive(subItem.href);
 
-                      if (subItem.isComingSoon) {
-                        return (
-                          <button
-                            key={subItem.title}
-                            type="button"
-                            onClick={() => handleComingSoon(subItem.title)}
-                            className="flex items-center justify-between w-full px-4 pl-10 h-8 text-[12.5px] text-muted-foreground/75 hover:bg-muted/50 hover:text-sidebar-foreground transition-colors border-l-[3px] border-transparent cursor-pointer"
-                          >
-                            <span className="truncate">{subItem.title}</span>
-                            <span className="text-[10px] px-1 rounded bg-muted text-muted-foreground font-mono leading-4 shrink-0">
-                              soon
-                            </span>
-                          </button>
-                        );
-                      }
+                          if (subItem.isComingSoon) {
+                            return (
+                              <button
+                                key={subItem.title}
+                                type="button"
+                                onClick={() => handleComingSoon(subItem.title)}
+                                className="flex items-center justify-between w-full px-2.5 h-8.5 rounded-md text-[13.5px] text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors cursor-pointer"
+                              >
+                                <span className="truncate">{subItem.title}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono leading-none shrink-0">
+                                  soon
+                                </span>
+                              </button>
+                            );
+                          }
 
-                      return (
-                        <Link
-                          key={subItem.title}
-                          href={subItem.href}
-                          onClick={handleNavClick}
-                          className={`flex items-center w-full px-4 pl-10 h-8 text-[12.5px] transition-colors
-                            ${
-                              subActive
-                                ? "bg-accent text-sidebar-primary font-medium border-l-[3px] border-sidebar-primary pl-[37px]"
-                                : "text-sidebar-foreground hover:bg-muted/60 border-l-[3px] border-transparent pl-[37px]"
-                            }`}
-                        >
-                          <span className="truncate">{subItem.title}</span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
+                          return (
+                            <Link
+                              key={subItem.title}
+                              href={subItem.href}
+                              onClick={handleNavClick}
+                              className={`flex items-center w-full px-2.5 h-8.5 rounded-md text-[13.5px] transition-colors ${
+                                subActive
+                                  ? "bg-primary text-white font-medium shadow-xs"
+                                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                              }`}
+                            >
+                              <span className="truncate">{subItem.title}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </SidebarMenuItem>
             );
           })}
         </SidebarMenu>
       </SidebarContent>
+
+      {/* Bottom Collapse/Expand Rail Toggle (Desktop) */}
+      <SidebarFooter className="hidden md:flex border-t border-sidebar-border p-2">
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className={`flex items-center w-full h-9 rounded-md text-[13px] text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors cursor-pointer ${
+            isCollapsed ? "justify-center" : "justify-between px-2.5"
+          }`}
+        >
+          {!isCollapsed && <span className="font-medium">Collapse</span>}
+          {isCollapsed ? (
+            <IconLayoutSidebarLeftExpand className="size-5" stroke={1.75} />
+          ) : (
+            <IconLayoutSidebarLeftCollapse className="size-5" stroke={1.75} />
+          )}
+        </button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

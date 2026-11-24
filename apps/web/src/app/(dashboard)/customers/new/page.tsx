@@ -160,7 +160,7 @@ export default function CreateCustomerPage() {
           >
             <ArrowLeft className="size-3.5" />
           </Link>
-          <h1 className="text-[18px] font-semibold text-foreground leading-tight truncate">
+          <h1 className="text-[20px] sm:text-[22px] font-semibold text-foreground leading-tight truncate">
             New Customer
           </h1>
         </div>
@@ -170,7 +170,7 @@ export default function CreateCustomerPage() {
             variant="outline"
             size="sm"
             onClick={handleCancelClick}
-            className="h-8 text-[12px] rounded"
+            className="h-9 text-[13px] rounded"
             type="button"
           >
             Cancel
@@ -180,20 +180,20 @@ export default function CreateCustomerPage() {
             size="sm"
             onClick={onSaveDraft}
             disabled={isSubmitting}
-            className="h-8 text-[12px] gap-1.5 rounded"
+            className="h-9 text-[13px] gap-1.5 rounded"
             type="button"
           >
-            <FileEdit className="size-3.5 text-muted-foreground" />
+            <FileEdit className="size-4 text-muted-foreground" />
             <span>Save as Draft</span>
           </Button>
           <Button
             size="sm"
             onClick={handleSubmit(onSubmit)}
             loading={isSubmitting}
-            className="h-8 text-[12px] gap-1.5 bg-primary text-primary-foreground font-medium hover:bg-primary/90 rounded px-3"
+            className="h-9 text-[13px] gap-1.5 bg-primary text-primary-foreground font-medium hover:bg-primary/90 rounded px-4"
             type="button"
           >
-            <Save className="size-3.5" />
+            <Save className="size-4" />
             <span>Save</span>
           </Button>
         </div>

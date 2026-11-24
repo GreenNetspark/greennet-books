@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
                     return (
                       <TableHead
                         key={header.id}
-                        className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap h-9 px-3 py-1.5"
+                        className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap h-10 px-3.5 py-2"
                       >
                         {header.isPlaceholder ? null : canSort ? (
                           <button
@@ -149,14 +149,14 @@ export function DataTable<TData, TValue>({
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                     onClick={() => onRowClick?.(row.original)}
-                    className={`h-9 transition-colors border-b border-border/60 last:border-b-0 even:bg-[#fbfbfb] dark:even:bg-muted/15 hover:bg-blue-50/50 dark:hover:bg-accent/40 ${
+                    className={`h-11 transition-colors border-b border-border/60 last:border-b-0 even:bg-[#fbfbfb] dark:even:bg-muted/15 hover:bg-blue-50/50 dark:hover:bg-accent/40 ${
                       onRowClick ? "cursor-pointer" : ""
                     }`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className="px-3 py-1.5 text-[13px] text-foreground align-middle"
+                        className="px-3.5 py-2 text-[13.5px] text-foreground align-middle"
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

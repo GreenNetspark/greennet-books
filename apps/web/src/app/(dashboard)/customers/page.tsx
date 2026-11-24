@@ -112,27 +112,27 @@ export default function CustomersPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => toast.info("Customer bulk import will be available in Phase 2.")}
-              className="h-8 gap-1.5 text-[12px] rounded"
+              onClick={() => toast.info("Customer bulk import will be available in Phase 2.", { id: "coming-soon" })}
+              className="h-9 gap-1.5 text-[13px] rounded"
             >
-              <Upload className="size-3.5 text-muted-foreground" />
+              <Upload className="size-4 text-muted-foreground" />
               <span>Import</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => toast.info("Exporting customer master list to Excel/CSV...")}
-              className="h-8 gap-1.5 text-[12px] rounded"
+              onClick={() => toast.info("Exporting customer master list to Excel/CSV...", { id: "coming-soon" })}
+              className="h-9 gap-1.5 text-[13px] rounded"
             >
-              <Download className="size-3.5 text-muted-foreground" />
+              <Download className="size-4 text-muted-foreground" />
               <span>Export</span>
             </Button>
             <Button
               render={<Link href="/customers/new" />}
               size="sm"
-              className="h-8 gap-1 text-[12px] bg-primary text-primary-foreground font-medium hover:bg-primary/90 rounded px-3"
+              className="h-9 gap-1.5 text-[13px] bg-primary text-primary-foreground font-medium hover:bg-primary/90 rounded px-3.5"
             >
-              <Plus className="size-3.5" />
+              <Plus className="size-4" />
               <span>New</span>
             </Button>
           </div>

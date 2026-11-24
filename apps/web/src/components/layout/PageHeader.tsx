@@ -18,9 +18,9 @@ export function PageHeader({
   className = "",
 }: PageHeaderProps) {
   return (
-    <div className={`flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between mb-4 ${className}`}>
-      <div className="flex items-center gap-2 min-w-0">
-        <h1 className="text-[18px] font-semibold text-foreground leading-tight truncate">
+    <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 ${className}`}>
+      <div className="flex items-center gap-2.5 min-w-0">
+        <h1 className="text-[20px] sm:text-[22px] font-semibold text-foreground leading-tight truncate">
           {title}
         </h1>
         {badge && <div className="shrink-0">{badge}</div>}

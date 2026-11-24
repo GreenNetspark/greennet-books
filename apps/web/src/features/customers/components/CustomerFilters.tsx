@@ -72,21 +72,21 @@ export function CustomerFilters({
   return (
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 rounded border border-border bg-card px-3 py-2.5">
       {/* Left: Search + Dropdowns */}
-      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 flex-1 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 flex-1 min-w-0">
         <div className="w-full sm:w-64">
           <SearchInput
             value={searchQuery}
             onChange={onSearchChange}
             placeholder="Search name, GSTIN, phone..."
-            className="w-full h-8 text-[12px]"
+            className="w-full h-9 text-[13px]"
           />
         </div>
 
         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
           {/* Status Filter */}
-          <div className="w-full sm:w-[120px]">
+          <div className="w-full sm:w-[130px]">
             <Select value={statusFilter} onValueChange={(val) => onStatusChange(val || "all")}>
-              <SelectTrigger size="sm" className="h-8 text-[12px] rounded">
+              <SelectTrigger size="sm" className="h-9 text-[13px] rounded">
                 <SelectValue placeholder="Status">
                   {STATUS_LABELS[statusFilter] ?? "All Status"}
                 </SelectValue>
@@ -100,9 +100,9 @@ export function CustomerFilters({
           </div>
 
           {/* Type Filter */}
-          <div className="w-full sm:w-[125px]">
+          <div className="w-full sm:w-[135px]">
             <Select value={typeFilter} onValueChange={(val) => onTypeChange(val || "all")}>
-              <SelectTrigger size="sm" className="h-8 text-[12px] rounded">
+              <SelectTrigger size="sm" className="h-9 text-[13px] rounded">
                 <SelectValue placeholder="Type">
                   {TYPE_LABELS[typeFilter] ?? "All Types"}
                 </SelectValue>
@@ -117,13 +117,13 @@ export function CustomerFilters({
         </div>
 
         {/* Balance Only */}
-        <div className="flex items-center gap-1.5 sm:pl-1">
+        <div className="flex items-center gap-2 sm:pl-1">
           <Checkbox
             id="hasBalance"
             checked={hasBalanceOnly}
             onCheckedChange={(checked) => onHasBalanceChange(Boolean(checked))}
           />
-          <Label htmlFor="hasBalance" className="text-[12px] cursor-pointer font-normal text-muted-foreground">
+          <Label htmlFor="hasBalance" className="text-[13px] cursor-pointer font-normal text-muted-foreground">
             With balance
           </Label>
         </div>
@@ -131,13 +131,13 @@ export function CustomerFilters({
 
       {/* Right: QA State Simulator & Reset */}
       <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
-        <div className="w-full sm:w-[145px]">
+        <div className="w-full sm:w-[155px]">
           <Select
             value={stateOverride}
             onValueChange={(val: any) => onStateOverrideChange(val || "normal")}
           >
-            <SelectTrigger size="sm" className="h-8 text-[12px] border-dashed text-muted-foreground rounded">
-              <SlidersHorizontal className="size-3 mr-1 shrink-0" />
+            <SelectTrigger size="sm" className="h-9 text-[13px] border-dashed text-muted-foreground rounded">
+              <SlidersHorizontal className="size-3.5 mr-1 shrink-0" />
               <SelectValue placeholder="State">
                 {STATE_LABELS[stateOverride] ?? "State: Normal"}
               </SelectValue>

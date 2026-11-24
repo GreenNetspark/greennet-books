@@ -38,7 +38,7 @@ export function getCustomerColumns({
         const customer = row.original;
 
         return (
-          <div className="flex flex-col min-w-[190px] py-0.5">
+          <div className="flex flex-col min-w-[200px] py-0.5">
             <button
               type="button"
               onClick={() =>
@@ -47,11 +47,11 @@ export function getCustomerColumns({
                   { id: "coming-soon" }
                 )
               }
-              className="font-medium text-[13px] text-primary hover:underline text-left truncate max-w-[230px] cursor-pointer leading-tight"
+              className="font-medium text-[14px] text-primary hover:underline text-left truncate max-w-[240px] cursor-pointer leading-snug"
             >
               {customer.name}
             </button>
-            <span className="text-[11px] text-muted-foreground truncate max-w-[230px] leading-tight mt-0.5">
+            <span className="text-[12px] text-muted-foreground truncate max-w-[240px] leading-snug">
               {customer.contactPerson}
             </span>
           </div>
