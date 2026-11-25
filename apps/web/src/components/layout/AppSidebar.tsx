@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { toast } from "sonner";
 import { AnimatePresence, motion } from "motion/react";
+import { useRouter } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +27,7 @@ import {
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { state, isMobile, setOpen, setOpenMobile, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed" && !isMobile;
 
@@ -62,10 +63,29 @@ export function AppSidebar() {
     }
   };
 
-  const handleComingSoon = (title: string) => {
-    toast.info(`${title} is planned for upcoming development phases.`, {
-      id: "coming-soon",
-    });
+  // Map sidebar href prefixes to guide module IDs
+  const hrefToGuide: Record<string, string> = {
+    "/sales": "sales",
+    "/customers": "sales",
+    "/purchases": "purchases",
+    "/banking": "banking",
+    "/accounting": "accountant",
+    "/inventory": "inventory",
+    "/expenses": "expenses",
+    "/taxation": "gst",
+    "/assets": "assets",
+    "/reports": "reports",
+    "/automation": "automation",
+    "/settings": "sales",
+  };
+
+  const handleComingSoon = (title: string, href: string) => {
+    // Find guide module for this href
+    const matched = Object.entries(hrefToGuide).find(([prefix]) => href.startsWith(prefix));
+    const guideId = matched ? matched[1] : null;
+    if (guideId) {
+      router.push(`/guide/${guideId}`);
+    }
     if (isMobile) {
       setOpenMobile(false);
     }
@@ -234,7 +254,7 @@ export function AppSidebar() {
                               <button
                                 key={subItem.title}
                                 type="button"
-                                onClick={() => handleComingSoon(subItem.title)}
+                                onClick={() => handleComingSoon(subItem.title, subItem.href)}
                                 className="flex items-center justify-between w-full px-2.5 h-8.5 rounded-md text-[13.5px] text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors cursor-pointer"
                               >
                                 <span className="truncate">{subItem.title}</span>

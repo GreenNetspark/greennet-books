@@ -12,6 +12,7 @@ import {
   IconChartBar,
   IconSparkles,
   IconSettings,
+  IconHelp,
 } from "@tabler/icons-react";
 
 export type NavIcon = ComponentType<{ className?: string; stroke?: number }>;
@@ -163,6 +164,12 @@ export const navigationConfig: NavGroup[] = [
       { title: "Notifications", href: "/automation/notifications", isComingSoon: true },
       { title: "Approval Centre", href: "/automation/approvals", isComingSoon: true },
     ],
+  },
+  {
+    title: "User Guide",
+    shortTitle: "Guide",
+    icon: IconHelp,
+    href: "/guide",
   },
   {
     title: "Settings",
